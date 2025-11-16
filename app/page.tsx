@@ -12,7 +12,7 @@ export default function Home() {
             Live results sourced directly from teertooday.com
           </p>
           <p className="text-center text-sm text-gray-500">
-            No mock data • Real-time scraping • Automatic updates
+            Real-time scraping • Automatic updates
           </p>
         </div>
         <TeerResults />
