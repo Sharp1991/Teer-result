@@ -1,41 +1,39 @@
-import React from "react";
+// app/page.tsx
+import { Result } from "@/types"; // adjust if you have types
 
-type Result = {
-  date: string | null;
-  location: string;
-  first: string | null;
-  second: string | null;
-  source: string;
-};
+export default async function Home() {
+  // Use the full URL directly for scraping
+  const res = await fetch("https://teertooday.com/", {
+    headers: {
+      "User-Agent": "Mozilla/5.0 (compatible; TeerScraper/1.0; +https://example.com)"
+    }
+  });
 
-async function getTeerResults(): Promise<Result> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/scrape`);
-  if (!res.ok) throw new Error("Failed to fetch Teer results");
-  return res.json();
-}
+  const html = await res.text();
 
-export default async function Page() {
-  const todayResult = await getTeerResults();
+  // Scrape numbers from HTML
+  const dateMatch = html.match(/\b(\d{1,2}-\d{1,2}-\d{4})\b/);
+  const date = dateMatch ? dateMatch[1] : null;
+
+  let first = null, second = null;
+  if (dateMatch) {
+    const idx = dateMatch.index;
+    const look = html.slice(idx, idx + 400);
+    const numPair = look.match(/(\d{1,3})\D+(\d{1,3})/);
+    if (numPair) {
+      first = numPair[1];
+      second = numPair[2];
+    }
+  }
+
+  const todayResult: Result = { date, first, second, source: "https://teertooday.com/" };
 
   return (
-    <main className="p-4 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Today's Teer Results</h1>
-      <p className="mb-2">Date: {todayResult.date || "N/A"}</p>
-      <p className="mb-4">Location: {todayResult.location}</p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-green-100 p-4 rounded-lg text-center">
-          <p className="font-medium">First Round</p>
-          <p className="text-xl font-bold text-green-600">{todayResult.first || "-"}</p>
-        </div>
-
-        <div className="bg-blue-100 p-4 rounded-lg text-center">
-          <p className="font-medium">Second Round</p>
-          <p className="text-xl font-bold text-blue-600">{todayResult.second || "-"}</p>
-        </div>
-      </div>
-
-      <p className="mt-4 text-sm text-gray-500">Source: <a href={todayResult.source} target="_blank" rel="noopener noreferrer">{todayResult.source}</a></p>
+    <main>
+      <h1>Teer Result</h1>
+      <p>Date: {todayResult.date}</p>
+      <p>First: {todayResult.first}</p>
+      <p>Second: {todayResult.second}</p>
     </main>
   );
 }
