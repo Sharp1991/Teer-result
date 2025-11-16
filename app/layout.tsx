@@ -1,4 +1,4 @@
-import '../styles/globals.css'; // <-- Add this line to import Tailwind
+import '../styles/globals.css';
 
 export const metadata = {
   title: "Teer Results",
@@ -8,7 +8,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html>
-      <body className="font-sans p-5"> {/* Tailwind classes instead of inline styles */}
+      <body className="font-sans p-5">
         {children}
       </body>
     </html>
