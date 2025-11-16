@@ -1,17 +1,20 @@
+// app/page.tsx
 import React from "react";
 
 type Result = {
   first: string;
   second: string;
   // third removed
-  // add other fields if necessary
 };
 
-interface Props {
-  todayResult: Result;
-}
+// If you're fetching props inside, use a function or fetch directly
+// For now, let's assume a placeholder
+const todayResult: Result = {
+  first: "123",
+  second: "456",
+};
 
-const Page: React.FC<Props> = ({ todayResult }) => {
+export default function Page() {
   return (
     <main className="p-4 max-w-3xl mx-auto">
       <section className="mb-6">
@@ -32,6 +35,4 @@ const Page: React.FC<Props> = ({ todayResult }) => {
       </section>
     </main>
   );
-};
-
-export default Page;
+}
