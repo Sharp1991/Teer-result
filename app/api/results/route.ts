@@ -1,18 +1,9 @@
 import { NextResponse } from 'next/server';
 
-interface TeerResult {
-  date: string;
-  firstRound: string;
-  secondRound: string;
-  time?: string;
-  location?: string;
-}
-
 export async function GET() {
   try {
-    // Use your existing scraping API
     const scrapeResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/scrape`, {
-      next: { revalidate: 300 } // Cache for 5 minutes
+      next: { revalidate: 300 }
     });
     
     if (!scrapeResponse.ok) {
@@ -24,6 +15,13 @@ export async function GET() {
 
     const scrapedData = await scrapeResponse.json();
     
+    if (!scrapeResponse.ok) {
+      return NextResponse.json(
+        { error: 'Scraping service returned an error' },
+        { status: 500 }
+      );
+    }
+
     if (!scrapedData.date || !scrapedData.first || !scrapedData.second) {
       return NextResponse.json(
         { error: 'Incomplete data received from source' },
@@ -31,12 +29,12 @@ export async function GET() {
       );
     }
 
-    const result: TeerResult = {
+    const result = {
       date: scrapedData.date,
       firstRound: scrapedData.first,
       secondRound: scrapedData.second,
       location: scrapedData.location || 'SHILLONG',
-      time: '4:30 PM' // Default time for Teer
+      time: '4:30 PM'
     };
 
     return NextResponse.json({ 
