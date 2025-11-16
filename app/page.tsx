@@ -31,7 +31,7 @@ export default function HomePage() {
 
       <main className="max-w-5xl mx-auto p-6">
         {loading ? (
-          <p className="text-center text-gray-500">Loading results...</p>
+          <p className="text-center text-gray-500">Loading results....</p>
         ) : (
           <>
             {todayResult && (
@@ -39,16 +39,13 @@ export default function HomePage() {
                 <h2 className="text-2xl font-bold mb-2">Today's Result ({todayResult.date})</h2>
                 <div className="grid grid-cols-3 gap-4 text-center mt-4">
                   <div className="bg-green-100 p-4 rounded-lg">
-                    <p className="font-medium">First</p>
+                    <p className="font-medium">First Round</p>
                     <p className="text-xl font-bold text-green-600">{todayResult.first}</p>
                   </div>
                   <div className="bg-yellow-100 p-4 rounded-lg">
-                    <p className="font-medium">Second</p>
+                    <p className="font-medium">Second Round</p>
                     <p className="text-xl font-bold text-yellow-600">{todayResult.second}</p>
                   </div>
-                  <div className="bg-red-100 p-4 rounded-lg">
-                    <p className="font-medium">Third</p>
-                    <p className="text-xl font-bold text-red-600">{todayResult.third}</p>
                   </div>
                 </div>
               </section>
