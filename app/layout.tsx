@@ -2,7 +2,7 @@ import './globals.css';
 
 export const metadata = {
   title: "Teer Results",
-  description: "Scraped Shillong Teer Results",
+  description: "Shillong Teer Results",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
