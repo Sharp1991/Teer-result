@@ -2,25 +2,10 @@
 
 import { useState, useEffect } from 'react';
 
-interface TeerResult {
-  date: string;
-  firstRound: string;
-  secondRound: string;
-  time?: string;
-  location?: string;
-}
-
-interface ApiResponse {
-  results: TeerResult[];
-  lastUpdated?: string;
-  error?: string;
-}
-
 export default function TeerResults() {
-  const [results, setResults] = useState<TeerResult[]>([]);
+  const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [lastUpdated, setLastUpdated] = useState<string>('');
 
   useEffect(() => {
     fetchResults();
@@ -31,11 +16,10 @@ export default function TeerResults() {
       setLoading(true);
       setError('');
       const response = await fetch('/api/results');
-      const data: ApiResponse = await response.json();
+      const data = await response.json();
       
       if (response.ok) {
         setResults(data.results || []);
-        setLastUpdated(data.lastUpdated || '');
       } else {
         setError(data.error || 'Failed to fetch results from source');
       }
@@ -76,16 +60,6 @@ export default function TeerResults() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Last Updated */}
-      {lastUpdated && (
-        <div className="text-center mb-6">
-          <p className="text-sm text-gray-500">
-            Last updated: {new Date(lastUpdated).toLocaleString()}
-          </p>
-        </div>
-      )}
-
-      {/* Results Grid */}
       <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-1">
         {results.map((result, index) => (
           <div
@@ -126,7 +100,6 @@ export default function TeerResults() {
               </div>
             </div>
 
-            {/* Source Info */}
             <div className="text-center mt-6 pt-4 border-t border-gray-200">
               <p className="text-xs text-gray-500">
                 Data sourced directly from teertooday.com
@@ -136,7 +109,6 @@ export default function TeerResults() {
         ))}
       </div>
 
-      {/* Refresh Button */}
       <div className="text-center mt-8">
         <button
           onClick={fetchResults}
@@ -147,7 +119,6 @@ export default function TeerResults() {
         </button>
       </div>
 
-      {/* No Results Message */}
       {results.length === 0 && !loading && (
         <div className="text-center py-12">
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-md mx-auto">
