@@ -1,16 +1,18 @@
-import './global.css';
+import './globals.css'
 
 export const metadata = {
-  title: "Teer Results",
-  description: "Shillong Teer Results",
-};
+  title: 'Teer Results',
+  description: 'Latest Teer results from various regions',
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html>
-      <body className="font-sans p-5">
-        {children}
-      </body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
-  );
+  )
 }
