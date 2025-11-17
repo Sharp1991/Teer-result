@@ -3,7 +3,7 @@ import cheerio from "cheerio";
 
 export async function GET() {
   try {
-    const target = "https://teertoday.com/";
+    const target = "https://teertooday.com/"; // CORRECTED URL
     console.log(`Scraping: ${target}`);
     
     const res = await fetch(target, {
@@ -31,56 +31,56 @@ export async function GET() {
     // Look for the exact pattern you mentioned
     let first = null, second = null, date = null, location = "SHILLONG";
 
-    // Strategy 1: Look for the exact format "F/R(3:30PM) S/R(4:30PM)" followed by numbers
+    // Get all text content
     const text = $('body').text();
-    
-    // Look for the pattern: F/R(3:30PM) S/R(4:30PM) followed by two numbers
-    const teerPattern = /F\/R\s*\(\d{1,2}:\d{2}\s*[AP]M\)\s*S\/R\s*\(\d{1,2}:\d{2}\s*[AP]M\)\s*(\d{1,2})\s*(\d{1,2})/i;
+    console.log('Page text sample:', text.substring(0, 500)); // Log first 500 chars to see structure
+
+    // Strategy 1: Look for the exact format with F/R and S/R
+    const teerPattern = /F\/R\s*\(.*?\)\s*S\/R\s*\(.*?\)\s*(\d{1,2})\s*(\d{1,2})/i;
     const patternMatch = text.match(teerPattern);
     
     if (patternMatch) {
       first = patternMatch[1];
       second = patternMatch[2];
-      console.log(`Found teer numbers using pattern: ${first}, ${second}`);
+      console.log(`✅ Found teer numbers using F/R S/R pattern: ${first}, ${second}`);
     }
 
-    // Strategy 2: Look for date in DD-MM-YYYY format near the results
+    // Strategy 2: Look for date in DD-MM-YYYY format
     if (!date) {
       const dateMatch = text.match(/\b(\d{1,2}-\d{1,2}-\d{4})\b/);
       date = dateMatch ? dateMatch[1] : new Date().toLocaleDateString('en-IN').split('/').join('-');
+      console.log(`Date found: ${date}`);
     }
 
-    // Strategy 3: If pattern matching fails, look for two numbers near "F/R" and "S/R"
+    // Strategy 3: Look for SHILLONG text to confirm we're in the right section
+    const shillongMatch = text.match(/SHILLONG/i);
+    if (shillongMatch) {
+      location = "SHILLONG";
+      console.log(`Location confirmed: ${location}`);
+    }
+
+    // Strategy 4: If pattern matching fails, try to find any two numbers that look like teer results
     if (!first || !second) {
-      const frIndex = text.indexOf('F/R');
-      const srIndex = text.indexOf('S/R');
-      
-      if (frIndex !== -1 && srIndex !== -1) {
-        // Look for numbers after F/R and S/R
-        const afterFR = text.substring(frIndex, frIndex + 100);
-        const afterSR = text.substring(srIndex, srIndex + 100);
-        
-        const frNumberMatch = afterFR.match(/(\d{1,2})/);
-        const srNumberMatch = afterSR.match(/(\d{1,2})/);
-        
-        if (frNumberMatch && srNumberMatch) {
-          first = frNumberMatch[1];
-          second = srNumberMatch[1];
-          console.log(`Found numbers near F/R S/R: ${first}, ${second}`);
-        }
+      // Look for two 2-digit numbers close to each other
+      const numberPair = text.match(/(\b\d{2}\b)\s+(\b\d{2}\b)/);
+      if (numberPair) {
+        first = numberPair[1];
+        second = numberPair[2];
+        console.log(`🔍 Found number pair: ${first}, ${second}`);
       }
     }
 
-    // Strategy 4: Look for table structure that might contain the results
+    // Strategy 5: Check specific HTML elements that might contain results
     if (!first || !second) {
+      // Look in tables
       $('table').each((i, table) => {
         const tableText = $(table).text();
-        if (tableText.includes('F/R') && tableText.includes('S/R')) {
-          const numbers = tableText.match(/(\d{1,2})\D+(\d{1,2})/);
+        if (tableText.includes('F/R') || tableText.includes('S/R') || tableText.includes('SHILLONG')) {
+          const numbers = tableText.match(/(\d{2})\D+(\d{2})/);
           if (numbers) {
             first = numbers[1];
             second = numbers[2];
-            console.log(`Found numbers in table: ${first}, ${second}`);
+            console.log(`📊 Found numbers in table: ${first}, ${second}`);
             return false; // break the loop
           }
         }
@@ -90,8 +90,8 @@ export async function GET() {
     const payload = { 
       date, 
       location, 
-      first: first || null,
-      second: second || null,
+      first: first,
+      second: second,
       source: target,
       success: !!(first && second)
     };
