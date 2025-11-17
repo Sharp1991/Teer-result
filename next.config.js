@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  swcMinify: true, // Enables React/SWC compiler
-};
+  experimental: {
+    appDir: true,
+  },
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
