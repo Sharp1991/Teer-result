@@ -4,16 +4,17 @@ import TeerResults from "@/components/TeerResults"; import AIPredictionButton fr
 
 export default function Page() { return ( <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8"> {/* Header /} <div className="text-center mb-8"> <div className="mx-auto w-full max-w-2xl p-6 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white shadow-lg relative overflow-hidden"> {/ Decorative Graphic */} <div className="absolute inset-0 opacity-15 bg-[url('/pattern.svg')] bg-cover bg-center"></div>
 
-<h1 className="text-4xl font-extrabold drop-shadow relative">
-        Shillong Teer Results
-      </h1>
-      <p className="text-blue-100 mt-2 text-sm tracking-wide relative">
-        Accurate • Fast • Daily Updated
-      </p>
-    </div>
-  </div>
+<div className="relative flex flex-col items-center">
 
-  {/* Top Ad Placeholder */}
+{/* Decorative Graphic */} <img src="/header-graphic.svg" alt="Teer Graphic" className="w-24 h-24 mb-3 opacity-90" />
+
+  <h1 className="text-3xl font-bold text-center text-blue-900">Shillong Teer Results</h1>
+</div>
+          <p className="text-blue-100 mt-2 text-sm tracking-wide relative">
+            Accurate • Fast • Daily Updated
+          </p>
+        </div>
+      </div>{/* Top Ad Placeholder */}
   <div className="max-w-3xl mx-auto mb-8">
     <div className="bg-white shadow-md p-6 rounded-xl text-center text-sm text-gray-500 border border-blue-100">
       <p>Advertisement Space</p>
