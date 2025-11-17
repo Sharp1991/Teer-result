@@ -1,8 +1,9 @@
+import type { Metadata } from 'next'
 import './global.css'
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Teer Results',
-  description: 'Latest Teer results from various regions',
+  description: 'Live Teer results from teertooday.com',
 }
 
 export default function RootLayout({
