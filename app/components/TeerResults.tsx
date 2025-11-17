@@ -22,7 +22,7 @@ export default function TeerResults() {
       setError('');
       const response = await fetch('/api/results');
       const data = await response.json();
-      
+
       if (data.success) {
         setTodayResult(data.today);
         setHistory(data.history || []);
@@ -43,7 +43,7 @@ export default function TeerResults() {
   if (loading) {
     return (
       <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
         <p className="mt-4 text-gray-600">Loading results...</p>
       </div>
     );
@@ -66,98 +66,125 @@ export default function TeerResults() {
   }
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
-      {/* Header - Inspired by archery counter */}
-      <div className="bg-green-800 text-white p-4 text-center">
-        <h1 className="text-2xl font-bold tracking-wide">TEER RESULT COUNTER</h1>
-        <p className="text-sm opacity-90 mt-1">License: ONLINE</p>
+    <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 text-center shadow">
+        <h1 className="text-2xl font-bold uppercase tracking-wide">
+          Shillong Teer Result
+        </h1>
+        <p className="text-blue-100 text-sm mt-1">
+          Daily Official Updates • Accuracy Guaranteed
+        </p>
       </div>
 
-      {/* Today's Result Section */}
+      {/* Today's Result */}
       <div className="p-6">
-        <div className="text-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-1">TODAY'S RESULT</h2>
-          <div className="flex justify-center items-center space-x-4 text-sm text-gray-600">
-            <span>📍 {todayResult?.location || 'SHILLONG'}</span>
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-semibold text-gray-800">
+            Today’s Result
+          </h2>
+
+          <div className="flex justify-center items-center gap-3 text-sm text-gray-600 mt-2">
+            <span>📍 {todayResult?.location || 'Shillong'}</span>
             <span>•</span>
-            <span>📅 {todayResult?.date || new Date().toLocaleDateString('en-IN')}</span>
+            <span>📅 {todayResult?.date}</span>
             <span>•</span>
-            <span className={`font-semibold ${todayResult?.status === 'live' ? 'text-green-600' : 'text-amber-600'}`}>
-              {todayResult?.status === 'live' ? '🟢 LIVE' : '🟡 CACHED'}
+
+            {/* Live / Cached Badge */}
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                todayResult?.status === 'live'
+                  ? 'bg-green-100 text-green-700 border border-green-300'
+                  : 'bg-amber-100 text-amber-700 border border-amber-300'
+              }`}
+            >
+              {todayResult?.status === 'live' ? 'LIVE' : 'CACHED'}
             </span>
           </div>
         </div>
-        
-        {/* Rounds Display */}
-        <div className="grid grid-cols-2 gap-6 mb-2">
-          {/* First Round */}
+
+        {/* Round Results */}
+        <div className="grid grid-cols-2 gap-6">
+          {/* 1st Round */}
           <div className="text-center">
-            <div className="text-lg font-medium text-gray-700 mb-3">1st Round</div>
-            <div className="bg-green-50 border-4 border-green-400 rounded-xl p-5 shadow-inner">
-              <div className="text-5xl font-bold text-green-800 tracking-wider">
+            <p className="text-lg font-medium text-gray-700 mb-2">1st Round</p>
+            <div className="bg-blue-50 border-2 border-blue-300 rounded-2xl p-6 shadow-inner">
+              <span className="text-5xl font-bold text-blue-700 tracking-wider">
                 {todayResult?.firstRound || '--'}
-              </div>
+              </span>
             </div>
           </div>
 
-          {/* Second Round */}
+          {/* 2nd Round */}
           <div className="text-center">
-            <div className="text-lg font-medium text-gray-700 mb-3">2nd Round</div>
-            <div className="bg-blue-50 border-4 border-blue-400 rounded-xl p-5 shadow-inner">
-              <div className="text-5xl font-bold text-blue-800 tracking-wider">
+            <p className="text-lg font-medium text-gray-700 mb-2">2nd Round</p>
+            <div className="bg-indigo-50 border-2 border-indigo-300 rounded-2xl p-6 shadow-inner">
+              <span className="text-5xl font-bold text-indigo-700 tracking-wider">
                 {todayResult?.secondRound || '--'}
-              </div>
+              </span>
             </div>
           </div>
         </div>
       </div>
 
       {/* History Section */}
-      <div className="border-t border-gray-300 bg-gray-50 p-6">
-        <div className="text-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">LAST 7 DAYS HISTORY</h3>
-        </div>
-        
-        <div className="grid grid-cols-7 gap-3 text-center">
-          {history.length > 0 ? (
-            history.map((result, index) => (
-              <div key={index} className="bg-white border border-gray-300 rounded-lg p-2 shadow-sm">
-                <div className="text-xs text-gray-500 font-medium mb-1">
-                  {new Date(result.date).getDate()}/{new Date(result.date).getMonth() + 1}
-                </div>
-                <div className="text-base font-bold text-green-700 mb-1">
-                  {result.firstRound}
-                </div>
-                <div className="text-base font-bold text-blue-700">
-                  {result.secondRound}
-                </div>
-              </div>
-            ))
-          ) : (
-            // Show placeholder when no history
-            Array.from({ length: 7 }).map((_, index) => {
-              const date = new Date();
-              date.setDate(date.getDate() - (6 - index));
+      <div className="border-t border-gray-200 bg-gray-50 p-6">
+        <h3 className="text-center text-lg font-semibold text-gray-800 mb-4">
+          Last 7 Days Result History
+        </h3>
+
+        <div className="grid grid-cols-7 gap-3">
+          {(history.length ? history : Array.from({ length: 7 })).map(
+            (result: any, index: number) => {
+              const dateObj = result
+                ? new Date(result.date)
+                : (() => {
+                    const d = new Date();
+                    d.setDate(d.getDate() - (6 - index));
+                    return d;
+                  })();
+
               return (
-                <div key={index} className="bg-white border border-gray-300 rounded-lg p-2 shadow-sm">
-                  <div className="text-xs text-gray-500 font-medium mb-1">
-                    {date.getDate()}/{date.getMonth() + 1}
-                  </div>
-                  <div className="text-base font-bold text-gray-400 mb-1">--</div>
-                  <div className="text-base font-bold text-gray-400">--</div>
+                <div
+                  key={index}
+                  className="bg-white rounded-lg border border-gray-200 p-2 shadow-sm text-center"
+                >
+                  <p className="text-[11px] text-gray-500 mb-1 font-medium">
+                    {dateObj.getDate()}/{dateObj.getMonth() + 1}
+                  </p>
+
+                  <p
+                    className={
+                      result
+                        ? 'text-blue-700 font-bold text-base'
+                        : 'text-gray-300 font-bold text-base'
+                    }
+                  >
+                    {result ? result.firstRound : '--'}
+                  </p>
+
+                  <p
+                    className={
+                      result
+                        ? 'text-indigo-700 font-bold text-base'
+                        : 'text-gray-300 font-bold text-base'
+                    }
+                  >
+                    {result ? result.secondRound : '--'}
+                  </p>
                 </div>
               );
-            })
+            }
           )}
         </div>
       </div>
 
       {/* Refresh Button */}
-      <div className="border-t border-gray-300 p-4 bg-white text-center">
+      <div className="border-t border-gray-200 p-5 bg-white text-center">
         <button
           onClick={fetchResults}
           disabled={loading}
-          className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium disabled:opacity-50"
         >
           {loading ? 'Refreshing...' : '🔄 Refresh Results'}
         </button>
