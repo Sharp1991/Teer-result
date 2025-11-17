@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
+    // Fetch from your scraper API
     const scrapeRes = await fetch(
       `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/scrape`,
       { cache: "no-store" }
@@ -16,7 +17,7 @@ export async function GET() {
       );
     }
 
-    // Take the most recent row
+    // Pick the latest row
     const latest = json.data[0];
 
     const result = {
@@ -24,7 +25,7 @@ export async function GET() {
       firstRound: latest.first,
       secondRound: latest.second,
       location: latest.location,
-      time: "4:30 PM", // optional, can hardcode or scrape if available
+      time: "4:30 PM", // optional hardcoded time
       source: "teertooday.com",
     };
 
