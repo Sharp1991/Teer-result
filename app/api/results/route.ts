@@ -1,45 +1,70 @@
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
+import fetch from "node-fetch";
+import cheerio from "cheerio";
+
+const RESULTS_FILE = path.join(process.cwd(), "results.json");
 
 export async function GET() {
   try {
-    // Fetch from your scraper API
-    const scrapeRes = await fetch(
-      `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/scrape`,
-      { cache: "no-store" }
-    );
-
-    const json = await scrapeRes.json();
-
-    if (!json.success || !Array.isArray(json.data) || json.data.length === 0) {
-      return NextResponse.json(
-        { error: "No results found", results: [] },
-        { status: 500 }
-      );
+    // Read cached results
+    let results = [];
+    if (fs.existsSync(RESULTS_FILE)) {
+      results = JSON.parse(fs.readFileSync(RESULTS_FILE, "utf-8"));
     }
 
-    // Pick the latest row
-    const latest = json.data[0];
+    // Get current time in IST
+    const now = new Date();
+    const istOffset = 5.5 * 60; // IST = UTC +5:30
+    const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+    const istTime = new Date(utc + istOffset * 60000);
+    const hours = istTime.getHours();
 
-    const result = {
-      date: latest.date,
-      firstRound: latest.first,
-      secondRound: latest.second,
-      location: latest.location,
-      time: "4:30 PM", // optional hardcoded time
-      source: "teertooday.com",
-    };
+    // Only scrape if time is between 17:00 and 18:00 IST
+    if (hours === 17) {
+      console.log("Scraping latest result (IST)...");
+
+      const response = await fetch("https://teertooday.com/Previous-Results.php");
+      const html = await response.text();
+      const $ = cheerio.load(html);
+
+      let latestResult = null;
+      $("table tr").each((i, row) => {
+        const cells = $(row).find("td");
+        if (cells.length === 4) {
+          const date = $(cells[0]).text().trim();
+          const first = $(cells[1]).text().trim();
+          const second = $(cells[2]).text().trim();
+          const location = $(cells[3]).text().trim();
+
+          if (date && first && second && location) {
+            latestResult = { date, first, second, location };
+            return false; // stop after first valid row
+          }
+        }
+      });
+
+      if (latestResult) {
+        const todayIndex = results.findIndex(r => r.date === latestResult.date);
+        if (todayIndex > -1) {
+          results[todayIndex] = latestResult; // update existing
+        } else {
+          results.unshift(latestResult); // add new
+          if (results.length > 7) results.pop(); // keep only last 7 days
+        }
+        fs.writeFileSync(RESULTS_FILE, JSON.stringify(results, null, 2));
+      }
+    }
 
     return NextResponse.json({
       success: true,
-      results: [result],
+      data: results,
       lastUpdated: new Date().toISOString(),
       source: "teertooday.com",
     });
-  } catch (err) {
-    console.error("Results API error:", err);
-    return NextResponse.json(
-      { error: "Failed to fetch results", results: [] },
-      { status: 500 }
-    );
+  } catch (error) {
+    console.error("Error:", error);
+    return NextResponse.json({ success: false, error: "Failed to fetch results", data: [] }, { status: 500 });
   }
 }
