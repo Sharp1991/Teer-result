@@ -57,7 +57,7 @@ export async function GET() {
           }
         }
       } catch (sourceError) {
-        console.log(`Source ${source.name} failed:`, sourceError.message);
+        console.log(`Source ${source.name} failed:`, (sourceError as Error).message);
         continue; // Try next source
       }
     }
