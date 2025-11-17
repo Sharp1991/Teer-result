@@ -1,205 +1,57 @@
-'use client';
+import TeerResults from './components/TeerResults'
+import AIPredictionButton from './components/AIPredictionButton'
 
-import { useState, useEffect } from 'react';
-
-interface TeerResult {
-  date: string;
-  firstRound: string;
-  secondRound: string;
-  location: string;
-  status: 'live' | 'cached';
-}
-
-export default function TeerResults() {
-  const [todayResult, setTodayResult] = useState<TeerResult | null>(null);
-  const [history, setHistory] = useState<TeerResult[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  const fetchResults = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const response = await fetch('/api/results');
-      const data = await response.json();
-
-      if (data.success) {
-        setTodayResult(data.today);
-        setHistory(data.history || []);
-      } else {
-        setError(data.error || 'Failed to load results');
-      }
-    } catch (err) {
-      setError('Network error. Please check your connection.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchResults();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Loading results...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-8">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
-          <p className="text-red-700 mb-4">{error}</p>
-          <button
-            onClick={fetchResults}
-            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
-
+export default function Home() {
   return (
-    <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden">
-
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 text-center shadow">
-        <h1 className="text-2xl font-bold uppercase tracking-wide">
-          Shillong Teer Result
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-extrabold text-blue-900 drop-shadow-md">
+          Shillong Teer Results
         </h1>
-        <p className="text-blue-100 text-sm mt-1">
-          Daily Updates • Accuracy Guaranteed
+        <p className="text-gray-600 mt-2 text-sm tracking-wide">
+          Accurate • Fast • Daily Updated
         </p>
       </div>
 
-      {/* Today's Result */}
-      <div className="p-6">
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-semibold text-gray-800">Today’s Result</h2>
-
-          <div className="flex justify-center items-center gap-3 text-sm text-gray-600 mt-2">
-            <span>📍 {todayResult?.location || 'Shillong'}</span>
-            <span>•</span>
-            <span>📅 {todayResult?.date}</span>
-            <span>•</span>
-
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                todayResult?.status === 'live'
-                  ? 'bg-green-100 text-green-700 border border-green-300'
-                  : 'bg-blue-100 text-blue-700 border border-blue-300'
-              }`}
-            >
-              {todayResult?.status === 'live' ? 'LIVE' : 'UPDATED'}
-            </span>
-          </div>
-        </div>
-
-        {/* Round Results */}
-        <div className="grid grid-cols-2 gap-6">
-          
-          {/* 1st Round */}
-          <div className="text-center">
-            <p className="text-lg font-medium text-gray-700 mb-2">1st Round</p>
-            <div className="bg-blue-50 border-2 border-blue-300 rounded-2xl p-6 shadow-inner">
-              <span className="text-5xl font-bold text-blue-700 tracking-wider">
-                {todayResult?.firstRound || '--'}
-              </span>
-            </div>
-          </div>
-
-          {/* 2nd Round */}
-          <div className="text-center">
-            <p className="text-lg font-medium text-gray-700 mb-2">2nd Round</p>
-            <div className="bg-indigo-50 border-2 border-indigo-300 rounded-2xl p-6 shadow-inner">
-              <span className="text-5xl font-bold text-indigo-700 tracking-wider">
-                {todayResult?.secondRound || '--'}
-              </span>
-            </div>
-          </div>
+      {/* Top Ad Placeholder */}
+      <div className="max-w-3xl mx-auto mb-8">
+        <div className="bg-white shadow-md p-6 rounded-xl text-center text-sm text-gray-500 border border-blue-100">
+          <p>Advertisement Space</p>
         </div>
       </div>
 
-      {/* History Section — BLUE THEME */}
-      <div className="border-t border-blue-100 bg-gradient-to-b from-blue-50 to-gray-100 p-6">
-        <h3 className="text-center text-xl font-bold text-gray-800 mb-6 tracking-wide">
-          Previous 7 Days Teer Results
-        </h3>
+      {/* Main Content */}
+      <div className="max-w-3xl mx-auto space-y-8">
+        {/* Results Component */}
+        <div className="bg-white rounded-2xl shadow-lg border border-blue-200 overflow-hidden">
+          <TeerResults />
+        </div>
 
-        <div className="grid grid-cols-7 gap-4">
-          {(history.length ? history : Array.from({ length: 7 })).map(
-            (result: any, index: number) => {
-              const dateObj = result
-                ? new Date(result.date)
-                : (() => {
-                    const d = new Date();
-                    d.setDate(d.getDate() - (6 - index));
-                    return d;
-                  })();
+        {/* AI Prediction Section */}
+        <div className="bg-white rounded-2xl shadow-lg border border-blue-200 p-8">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-blue-900">AI Prediction</h2>
+            <p className="text-gray-600">
+              Generate predictions using advanced Teer pattern analytics.
+            </p>
+          </div>
+          <div className="max-w-sm mx-auto">
+            <AIPredictionButton />
+          </div>
+        </div>
 
-              return (
-                <div
-                  key={index}
-                  className="
-                    bg-white 
-                    rounded-xl 
-                    border border-blue-100 
-                    p-3 
-                    shadow-md 
-                    hover:shadow-xl 
-                    transition-all 
-                    text-center
-                  "
-                >
-                  {/* Date */}
-                  <p className="text-[12px] text-gray-500 mb-1 font-semibold uppercase tracking-wide">
-                    {dateObj.getDate()}/{dateObj.getMonth() + 1}
-                  </p>
-
-                  {/* First Round */}
-                  <p
-                    className={
-                      result
-                        ? 'text-blue-700 font-extrabold text-xl'
-                        : 'text-gray-300 font-bold text-xl'
-                    }
-                  >
-                    {result ? result.firstRound : '--'}
-                  </p>
-
-                  {/* Second Round */}
-                  <p
-                    className={
-                      result
-                        ? 'text-indigo-700 font-extrabold text-xl'
-                        : 'text-gray-300 font-bold text-xl'
-                    }
-                  >
-                    {result ? result.secondRound : '--'}
-                  </p>
-                </div>
-              );
-            }
-          )}
+        {/* Bottom Ad Placeholder */}
+        <div className="bg-white shadow-md p-6 rounded-xl text-center text-sm text-gray-500 border border-blue-100">
+          <p>Advertisement Space</p>
         </div>
       </div>
 
-      {/* Refresh Button */}
-      <div className="border-t border-blue-100 p-5 bg-white text-center">
-        <button
-          onClick={fetchResults}
-          disabled={loading}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium disabled:opacity-50"
-        >
-          {loading ? 'Refreshing...' : '🔄 Refresh Results'}
-        </button>
+      {/* Footer */}
+      <div className="max-w-3xl mx-auto mt-12 text-center text-xs text-gray-500">
+        <p>Professional Teer Results Service • Data sourced from official providers</p>
+        <p className="mt-1">Auto-updated daily • Shillong results only</p>
       </div>
     </div>
-  );
+  )
 }
