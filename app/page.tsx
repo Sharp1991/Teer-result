@@ -1,77 +1,205 @@
-import TeerResults from "./components/TeerResults";
-import AIPredictionButton from "./components/AIPredictionButton";
+'use client';
 
-export default function Home() {
+import { useState, useEffect } from 'react';
+
+interface TeerResult {
+  date: string;
+  firstRound: string;
+  secondRound: string;
+  location: string;
+  status: 'live' | 'cached';
+}
+
+export default function TeerResults() {
+  const [todayResult, setTodayResult] = useState<TeerResult | null>(null);
+  const [history, setHistory] = useState<TeerResult[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const fetchResults = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const response = await fetch('/api/results');
+      const data = await response.json();
+
+      if (data.success) {
+        setTodayResult(data.today);
+        setHistory(data.history || []);
+      } else {
+        setError(data.error || 'Failed to load results');
+      }
+    } catch (err) {
+      setError('Network error. Please check your connection.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchResults();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="text-center py-8">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading results...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+          <p className="text-red-700 mb-4">{error}</p>
+          <button
+            onClick={fetchResults}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-gray-100">
-      {/* HEADER */}
-      <header className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-10 shadow-md">
-        <div className="container mx-auto px-4 max-w-4xl text-center">
-          <h1 className="text-4xl font-bold mb-3 tracking-wide">
-            Shillong Teer Results
-          </h1>
-          <p className="text-blue-100 text-lg">
-            Official Results • Daily Updates • Auto Refreshed
-          </p>
-        </div>
-      </header>
+    <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden">
 
-      <div className="container mx-auto px-4 max-w-4xl py-10 space-y-10">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 text-center shadow">
+        <h1 className="text-2xl font-bold uppercase tracking-wide">
+          Shillong Teer Result
+        </h1>
+        <p className="text-blue-100 text-sm mt-1">
+          Daily Updates • Accuracy Guaranteed
+        </p>
+      </div>
 
-        {/* LIVE INDICATORS */}
-        <div className="flex items-center justify-center space-x-6 text-sm text-gray-600">
-          <div className="flex items-center space-x-2">
-            <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-            <span>Live Results</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
-            <span>Historical Data</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
-            <span>Trusted Service</span>
-          </div>
-        </div>
+      {/* Today's Result */}
+      <div className="p-6">
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-semibold text-gray-800">Today’s Result</h2>
 
-        {/* RESULTS CARD */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-            Today’s Teer Results
-          </h2>
-          <TeerResults />
-        </div>
+          <div className="flex justify-center items-center gap-3 text-sm text-gray-600 mt-2">
+            <span>📍 {todayResult?.location || 'Shillong'}</span>
+            <span>•</span>
+            <span>📅 {todayResult?.date}</span>
+            <span>•</span>
 
-        {/* AI SECTION */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 hover:shadow-xl transition-shadow">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-              Advanced Teer Analytics
-            </h2>
-            <p className="text-gray-500 text-sm">
-              Premium AI-powered predictions & number analysis
-            </p>
-          </div>
-          <div className="max-w-md mx-auto">
-            <AIPredictionButton />
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                todayResult?.status === 'live'
+                  ? 'bg-green-100 text-green-700 border border-green-300'
+                  : 'bg-blue-100 text-blue-700 border border-blue-300'
+              }`}
+            >
+              {todayResult?.status === 'live' ? 'LIVE' : 'UPDATED'}
+            </span>
           </div>
         </div>
 
-        {/* FOOTER */}
-        <footer className="text-center text-gray-600 pt-6 pb-10">
-          <div className="bg-white rounded-2xl shadow border border-gray-200 p-6 max-w-lg mx-auto">
-            <p className="font-medium">Shillong Teer Results Service</p>
-            <div className="flex justify-center space-x-4 text-xs mt-2 text-gray-500">
-              <span>Data Source: teertooday.com</span>
-              <span>•</span>
-              <span>Updated Daily</span>
-              <span>•</span>
-              <span>Fast & Accurate</span>
+        {/* Round Results */}
+        <div className="grid grid-cols-2 gap-6">
+          
+          {/* 1st Round */}
+          <div className="text-center">
+            <p className="text-lg font-medium text-gray-700 mb-2">1st Round</p>
+            <div className="bg-blue-50 border-2 border-blue-300 rounded-2xl p-6 shadow-inner">
+              <span className="text-5xl font-bold text-blue-700 tracking-wider">
+                {todayResult?.firstRound || '--'}
+              </span>
             </div>
           </div>
-        </footer>
 
+          {/* 2nd Round */}
+          <div className="text-center">
+            <p className="text-lg font-medium text-gray-700 mb-2">2nd Round</p>
+            <div className="bg-indigo-50 border-2 border-indigo-300 rounded-2xl p-6 shadow-inner">
+              <span className="text-5xl font-bold text-indigo-700 tracking-wider">
+                {todayResult?.secondRound || '--'}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
-    </main>
+
+      {/* History Section — BLUE THEME */}
+      <div className="border-t border-blue-100 bg-gradient-to-b from-blue-50 to-gray-100 p-6">
+        <h3 className="text-center text-xl font-bold text-gray-800 mb-6 tracking-wide">
+          Previous 7 Days Teer Results
+        </h3>
+
+        <div className="grid grid-cols-7 gap-4">
+          {(history.length ? history : Array.from({ length: 7 })).map(
+            (result: any, index: number) => {
+              const dateObj = result
+                ? new Date(result.date)
+                : (() => {
+                    const d = new Date();
+                    d.setDate(d.getDate() - (6 - index));
+                    return d;
+                  })();
+
+              return (
+                <div
+                  key={index}
+                  className="
+                    bg-white 
+                    rounded-xl 
+                    border border-blue-100 
+                    p-3 
+                    shadow-md 
+                    hover:shadow-xl 
+                    transition-all 
+                    text-center
+                  "
+                >
+                  {/* Date */}
+                  <p className="text-[12px] text-gray-500 mb-1 font-semibold uppercase tracking-wide">
+                    {dateObj.getDate()}/{dateObj.getMonth() + 1}
+                  </p>
+
+                  {/* First Round */}
+                  <p
+                    className={
+                      result
+                        ? 'text-blue-700 font-extrabold text-xl'
+                        : 'text-gray-300 font-bold text-xl'
+                    }
+                  >
+                    {result ? result.firstRound : '--'}
+                  </p>
+
+                  {/* Second Round */}
+                  <p
+                    className={
+                      result
+                        ? 'text-indigo-700 font-extrabold text-xl'
+                        : 'text-gray-300 font-bold text-xl'
+                    }
+                  >
+                    {result ? result.secondRound : '--'}
+                  </p>
+                </div>
+              );
+            }
+          )}
+        </div>
+      </div>
+
+      {/* Refresh Button */}
+      <div className="border-t border-blue-100 p-5 bg-white text-center">
+        <button
+          onClick={fetchResults}
+          disabled={loading}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium disabled:opacity-50"
+        >
+          {loading ? 'Refreshing...' : '🔄 Refresh Results'}
+        </button>
+      </div>
+    </div>
   );
 }
