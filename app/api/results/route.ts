@@ -1,99 +1,93 @@
-import { NextResponse } from 'next/server';
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
+
+import { NextResponse } from "next/server";
+
+// Convert to IST
+function getIST() {
+  const now = new Date();
+  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+  return new Date(utc + 5.5 * 3600 * 1000);
+}
+
+function getISTDateString() {
+  return getIST().toLocaleDateString("en-IN").replace(/\//g, "-");
+}
 
 export async function GET() {
   try {
-    console.log('Scraping teer results from Previous-Results.php...');
-    
-    const targetUrl = 'https://teertooday.com/Previous-Results.php';
-    
-    const response = await fetch(targetUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-      },
-      signal: AbortSignal.timeout(15000),
-    });
+    console.log("🔄 Scraping fresh Teer results...");
 
-    if (!response.ok) {
-      throw new Error(`Website returned ${response.status}`);
-    }
+    const html = await fetchHTML();
+    const { today, history } = extractResults(html);
 
-    const html = await response.text();
-    console.log('Successfully fetched HTML');
-
-    // Extract data from the table
-    const { today, history } = extractResultsFromTable(html);
-
-    return NextResponse.json({
+    const payload = {
       success: true,
       today,
-      history: history.slice(0, 7), // Only last 7 days
-      lastUpdated: new Date().toISOString()
-    });
+      history: history.slice(0, 7),
+      scrapedAt: new Date().toISOString(),
+      note: "Live data from teertooday.com"
+    };
 
-  } catch (error) {
-    console.error('Scraping failed:', error);
+    return NextResponse.json(payload);
+
+  } catch (err) {
+    console.error("❌ Scrape Error:", err);
+    
+    // Return friendly error with fallback data
     return NextResponse.json({
       success: false,
-      error: 'Unable to fetch results. Please try again later.',
-      today: null,
-      history: []
-    }, { status: 500 });
+      error: "Live results temporarily unavailable",
+      today: {
+        date: getISTDateString(),
+        firstRound: "00",
+        secondRound: "00", 
+        location: "Shillong",
+        status: "cached"
+      },
+      history: [],
+      note: "Check back later for live updates"
+    });
   }
 }
 
-function extractResultsFromTable(html: string) {
-  const today = new Date();
-  const todayDateStr = today.toLocaleDateString('en-IN', {
-    day: '2-digit',
-    month: '2-digit', 
-    year: 'numeric'
-  }).replace(/\//g, '-');
+// Fetch raw HTML
+async function fetchHTML() {
+  const target = "https://teertooday.com/Previous-Results.php";
 
-  const results = [];
-  
-  // Regex to find table rows with the pattern: Date + F/R + S/R + City
-  const rowPattern = /(\d{2}-\d{2}-\d{4})<\/td>\s*<td[^>]*>(\d{2})<\/td>\s*<td[^>]*>(\d{2})<\/td>\s*<td[^>]*>([^<]+)</gi;
-  
+  const res = await fetch(target, {
+    headers: {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    },
+    signal: AbortSignal.timeout(10000),
+  });
+
+  if (!res.ok) throw new Error(`Website returned ${res.status}`);
+  return await res.text();
+}
+
+// More flexible regex
+function extractResults(html: string) {
+  const pattern =
+    /(\d{1,2}-\d{1,2}-\d{4})<\/td>\s*<td[^>]*>(\d{1,2})<\/td>\s*<td[^>]*>(\d{1,2})<\/td>\s*<td[^>]*>([^<]+)/gi;
+
+  const results: any[] = [];
   let match;
-  while ((match = rowPattern.exec(html)) !== null) {
+
+  while ((match = pattern.exec(html)) !== null) {
     const [_, date, firstRound, secondRound, city] = match;
-    
     results.push({
       date,
-      firstRound,
-      secondRound, 
+      firstRound: firstRound.padStart(2, '0'), // Ensure 2-digit format
+      secondRound: secondRound.padStart(2, '0'),
       location: city.trim(),
-      status: date === todayDateStr ? 'live' as const : 'cached' as const
+      status: "cached",
     });
   }
 
-  // Find today's result (first one in the list)
-  const todayResult = results.find(r => r.date === todayDateStr) || results[0];
-
-  // If no today result found, create one from the latest available
-  if (!todayResult && results.length > 0) {
-    const latest = results[0];
-    return {
-      today: {
-        date: todayDateStr,
-        firstRound: latest.firstRound,
-        secondRound: latest.secondRound,
-        location: latest.location,
-        status: 'cached' as const
-      },
-      history: results
-    };
-  }
-
   return {
-    today: todayResult || {
-      date: todayDateStr,
-      firstRound: '00',
-      secondRound: '00',
-      location: 'Shillong',
-      status: 'cached' as const
-    },
-    history: results
+    today: results[0] || null,
+    history: results,
   };
 }
