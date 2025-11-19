@@ -1,8 +1,48 @@
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
+
+export async function GET() {
+  try {
+    // Get all records
+    const { data: results, error } = await supabase
+      .from('teer_results')
+      .select('*')
+      .order('id', { ascending: false });
+
+    if (error) throw error;
+
+    // Calculate separate statistics for each round
+    const statistics = {
+      firstRound: calculateFirstRoundStatistics(results || []),
+      secondRound: calculateSecondRoundStatistics(results || [])
+    };
+
+    return NextResponse.json({
+      success: true,
+      statistics,
+      lastUpdated: new Date().toISOString(),
+      totalRecords: results?.length || 0
+    });
+
+  } catch (error) {
+    console.error('Statistics API error:', error);
+    return NextResponse.json({
+      success: false,
+      error: "Could not generate statistics"
+    }, { status: 500 });
+  }
+}
+
 // FIRST ROUND ONLY STATISTICS
 function calculateFirstRoundStatistics(results) {
-  const last60Days = results.slice(0, 60); // Last 60 results
-  const last30Days = results.slice(0, 30); // Last 30 results for trends
-  const previous30Days = results.slice(30, 60); // Previous 30 days for trends
+  const last60Days = results.slice(0, 60);
+  const last30Days = results.slice(0, 30);
+  const previous30Days = results.slice(30, 60);
   
   const firstRoundNumbers = results.map(r => r.first_round);
   const last60FirstRound = last60Days.map(r => r.first_round);
@@ -44,7 +84,7 @@ function calculateSecondRoundStatistics(results) {
   };
 }
 
-// 1. HOT NUMBERS: Most frequent in last 60 days
+// 1. HOT NUMBERS
 function calculateHotNumbers(roundNumbers) {
   const frequency = {};
   roundNumbers.forEach(number => {
@@ -60,12 +100,11 @@ function calculateHotNumbers(roundNumbers) {
     }));
 }
 
-// 2. DUE NUMBERS: Days since last appearance
+// 2. DUE NUMBERS
 function calculateDueNumbers(roundNumbers, allResults, roundType) {
   const lastAppearance = {};
   const today = new Date();
   
-  // Find last appearance date for each number
   allResults.forEach((result) => {
     const number = result[roundType];
     const resultDate = new Date(result.date);
@@ -79,7 +118,7 @@ function calculateDueNumbers(roundNumbers, allResults, roundType) {
   for (let num = 0; num <= 99; num++) {
     const daysSince = lastAppearance[num] 
       ? Math.floor((today - lastAppearance[num]) / (1000 * 60 * 60 * 24))
-      : 999; // Never appeared
+      : 999;
     
     dueNumbers.push({ number: num, days: daysSince });
   }
@@ -89,17 +128,17 @@ function calculateDueNumbers(roundNumbers, allResults, roundType) {
     .slice(0, 10);
 }
 
-// 3. LONGEST GAPS: Average days between appearances
+// 3. LONGEST GAPS
 function calculateLongestGaps(roundNumbers, allResults, roundType) {
   const gaps = calculateAllGaps(roundNumbers, allResults, roundType);
   return gaps.sort((a, b) => b.avgGap - a.avgGap).slice(0, 10);
 }
 
-// 4. SHORTEST GAPS: Average days between appearances  
+// 4. SHORTEST GAPS
 function calculateShortestGaps(roundNumbers, allResults, roundType) {
   const gaps = calculateAllGaps(roundNumbers, allResults, roundType);
   return gaps
-    .filter(gap => gap.avgGap > 0) // Exclude numbers with only one appearance
+    .filter(gap => gap.avgGap > 0)
     .sort((a, b) => a.avgGap - b.avgGap)
     .slice(0, 10);
 }
@@ -109,7 +148,6 @@ function calculateAllGaps(roundNumbers, allResults, roundType) {
   const appearances = {};
   const dateSortedResults = [...allResults].sort((a, b) => new Date(a.date) - new Date(b.date));
   
-  // Track all appearance dates for each number
   dateSortedResults.forEach((result) => {
     const number = result[roundType];
     const resultDate = new Date(result.date);
@@ -129,7 +167,6 @@ function calculateAllGaps(roundNumbers, allResults, roundType) {
       const avgGap = gapDays.reduce((a, b) => a + b, 0) / gapDays.length;
       gaps.push({ number: num, days: Math.round(avgGap) });
     } else if (appearances[num]) {
-      // Only one appearance - use large gap
       gaps.push({ number: num, days: 999 });
     }
   }
@@ -137,13 +174,13 @@ function calculateAllGaps(roundNumbers, allResults, roundType) {
   return gaps;
 }
 
-// 5. HIGH PROBABILITY: (frequency/total) * (days_since/avg_days_since)
+// 5. HIGH PROBABILITY
 function calculateHighProbability(roundNumbers, allResults, roundType) {
   const probabilities = calculateAllProbabilities(roundNumbers, allResults, roundType);
   return probabilities.sort((a, b) => b.probability - a.probability).slice(0, 10);
 }
 
-// 6. LOW PROBABILITY: Inverse of high probability
+// 6. LOW PROBABILITY
 function calculateLowProbability(roundNumbers, allResults, roundType) {
   const probabilities = calculateAllProbabilities(roundNumbers, allResults, roundType);
   return probabilities.sort((a, b) => a.probability - b.probability).slice(0, 10);
@@ -155,7 +192,6 @@ function calculateAllProbabilities(roundNumbers, allResults, roundType) {
   const lastAppearance = {};
   const today = new Date();
   
-  // Calculate frequency and last appearance
   roundNumbers.forEach(number => {
     frequency[number] = (frequency[number] || 0) + 1;
   });
@@ -168,7 +204,6 @@ function calculateAllProbabilities(roundNumbers, allResults, roundType) {
     }
   });
   
-  // Calculate average days since for all numbers
   let totalDaysSince = 0;
   let count = 0;
   for (let num = 0; num <= 99; num++) {
@@ -188,7 +223,6 @@ function calculateAllProbabilities(roundNumbers, allResults, roundType) {
       ? Math.floor((today - lastAppearance[num]) / (1000 * 60 * 60 * 24))
       : 999;
     
-    // Probability formula: (frequency_score) * (time_factor)
     const frequencyScore = freq / totalRecords;
     const timeFactor = daysSince / Math.max(avgDaysSince, 1);
     const probability = Math.min(100, Math.round((frequencyScore * timeFactor * 1000)));
@@ -199,20 +233,20 @@ function calculateAllProbabilities(roundNumbers, allResults, roundType) {
   return probabilities;
 }
 
-// 7. TRENDING UP: More frequent in recent 30 days vs previous 30 days
+// 7. TRENDING UP
 function calculateTrendingUp(currentPeriod, previousPeriod) {
   const trends = calculateAllTrends(currentPeriod, previousPeriod);
   return trends
-    .filter(trend => trend.trend > 0) // Only positive trends
+    .filter(trend => trend.trend > 0)
     .sort((a, b) => b.trend - a.trend)
     .slice(0, 10);
 }
 
-// 8. TRENDING DOWN: Less frequent in recent 30 days vs previous 30 days
+// 8. TRENDING DOWN
 function calculateTrendingDown(currentPeriod, previousPeriod) {
   const trends = calculateAllTrends(currentPeriod, previousPeriod);
   return trends
-    .filter(trend => trend.trend < 0) // Only negative trends
+    .filter(trend => trend.trend < 0)
     .sort((a, b) => a.trend - b.trend)
     .slice(0, 10);
 }
@@ -234,11 +268,11 @@ function calculateAllTrends(currentPeriod, previousPeriod) {
   for (let num = 0; num <= 99; num++) {
     const current = currentFreq[num] || 0;
     const previous = previousFreq[num] || 0;
-    const trend = current - previous; // Positive = trending up
+    const trend = current - previous;
     
     trends.push({ number: num, trend });
   }
   
   return trends;
 }
-}//
+}
