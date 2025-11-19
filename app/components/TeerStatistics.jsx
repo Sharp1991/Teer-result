@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 export default function TeerStatistics() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeRound, setActiveRound] = useState("first");
 
   useEffect(() => {
     fetchStatistics();
@@ -23,72 +24,89 @@ export default function TeerStatistics() {
 
   if (loading) {
     return (
-      <div className="text-center py-16">
-        <div className="animate-spin w-12 h-12 border-b-2 border-blue-600 rounded-full mx-auto"></div>
-        <p className="mt-4 text-gray-600 text-lg">Loading live statistics...</p>
+      <div className="text-center py-8">
+        <div className="animate-spin w-8 h-8 border-b-2 border-blue-600 rounded-full mx-auto"></div>
+        <p className="mt-2 text-gray-600 text-sm">Loading statistics...</p>
       </div>
     );
   }
 
   if (!stats) {
     return (
-      <div className="text-center py-16 text-gray-500 text-lg">
+      <div className="text-center py-8 text-gray-500 text-sm">
         Statistics unavailable - Please try again later
       </div>
     );
   }
 
+  const roundData = stats[activeRound];
+  const roundColor = activeRound === "first" ? "blue" : "green";
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
+      {/* Round Selector */}
+      <div className="flex justify-center mb-2">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-1">
+          <button
+            onClick={() => setActiveRound("first")}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeRound === "first" 
+                ? "bg-blue-600 text-white" 
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            First Round
+          </button>
+          <button
+            onClick={() => setActiveRound("second")}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeRound === "second" 
+                ? "bg-green-600 text-white" 
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            Second Round
+          </button>
+        </div>
+      </div>
+
       {/* Hot Numbers */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-        <h2 className="text-2xl font-bold text-red-700 mb-6">🔥 Hot Numbers (Last 60 Days)</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {stats.hotNumbersLast60.map((item, index) => (
-            <div key={item.number} className="text-center p-4 bg-red-50 border-2 border-red-200 rounded-xl hover:shadow-lg transition-all">
-              <div className="text-3xl font-bold text-red-700">{item.number.toString().padStart(2, '0')}</div>
-              <div className="text-sm text-red-600 mt-2">{item.count} appearances</div>
-              <div className="text-xs text-red-500 mt-1 font-semibold">Rank #{index + 1}</div>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <h3 className="text-base font-semibold text-gray-800 mb-3 text-center">
+          🔥 Hot Numbers
+        </h3>
+        <div className="grid grid-cols-5 gap-2">
+          {roundData.hotNumbers.map((item) => (
+            <div key={item.number} className="text-center p-2 bg-red-50 border border-red-200 rounded-md">
+              <div className="text-lg font-bold text-red-700">{item.number}</div>
+              <div className="text-xs text-red-600 mt-1">{item.count}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* Due Numbers */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-        <h2 className="text-2xl font-bold text-blue-700 mb-6">⏰ Due Numbers</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {stats.dueNumbers && stats.dueNumbers.slice(0, 10).map((item, index) => (
-            <div key={item.number} className="text-center p-4 bg-blue-50 border-2 border-blue-200 rounded-xl hover:shadow-lg transition-all">
-              <div className="text-3xl font-bold text-blue-700">{item.number.toString().padStart(2, '0')}</div>
-              <div className="text-sm text-blue-600 mt-2">{item.days} days ago</div>
-              <div className="text-xs text-blue-500 mt-1 font-semibold">Overdue #{index + 1}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Number Ranges */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-        <h2 className="text-2xl font-bold text-green-700 mb-6">📈 Number Range Distribution</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {stats.numberRanges && stats.numberRanges.map((range, index) => (
-            <div key={range.name} className="text-center p-4 bg-green-50 border-2 border-green-200 rounded-xl">
-              <div className="text-xl font-bold text-green-700">{range.name}</div>
-              <div className="text-2xl font-bold text-green-800 mt-2">{range.percentage}%</div>
-              <div className="text-sm text-green-600 mt-1">{range.count} numbers</div>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <h3 className="text-base font-semibold text-gray-800 mb-3 text-center">
+          ⏰ Due Numbers
+        </h3>
+        <div className="grid grid-cols-5 gap-2">
+          {roundData.dueNumbers.map((item) => (
+            <div key={item.number} className="text-center p-2 bg-blue-50 border border-blue-200 rounded-md">
+              <div className="text-lg font-bold text-blue-700">{item.number}</div>
+              <div className="text-xs text-blue-600 mt-1">{item.days}d</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* Refresh Button */}
-      <div className="text-center">
+      <div className="text-center pt-2">
         <button
           onClick={fetchStatistics}
-          className="bg-blue-600 text-white px-8 py-4 rounded-xl hover:bg-blue-700 transition-colors font-semibold text-lg"
+          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
         >
-          🔄 Refresh Live Data
+          🔄 Refresh Data
         </button>
       </div>
     </div>
