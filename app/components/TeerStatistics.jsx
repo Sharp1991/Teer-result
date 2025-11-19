@@ -12,6 +12,7 @@ export default function TeerStatistics() {
 
   const fetchStatistics = async () => {
     try {
+      setLoading(true);
       const res = await fetch('/api/statistics');
       const data = await res.json();
       if (data.success) setStats(data.statistics);
@@ -70,13 +71,13 @@ export default function TeerStatistics() {
         </div>
       </div>
 
-      {/* Hot Numbers */}
+      {/* Hot Numbers - Last 60 Rounds */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <h3 className="text-base font-semibold text-gray-800 mb-3 text-center">
-          🔥 Hot Numbers
+          🔥 Hot Numbers (Last 60 Rounds)
         </h3>
         <div className="grid grid-cols-5 gap-2">
-          {roundData.hotNumbers.map((item) => (
+          {roundData.hotNumbers?.map((item) => (
             <div key={item.number} className="text-center p-2 bg-red-50 border border-red-200 rounded-md">
               <div className="text-lg font-bold text-red-700">{item.number}</div>
               <div className="text-xs text-red-600 mt-1">{item.count}x</div>
@@ -85,13 +86,13 @@ export default function TeerStatistics() {
         </div>
       </div>
 
-      {/* Due Numbers */}
+      {/* Due Numbers - Longest Since Last Appearance */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <h3 className="text-base font-semibold text-gray-800 mb-3 text-center">
-          ⏰ Due Numbers
+          ⏰ Due Numbers (Longest Since Last)
         </h3>
         <div className="grid grid-cols-5 gap-2">
-          {roundData.dueNumbers.map((item) => (
+          {roundData.dueNumbers?.map((item) => (
             <div key={item.number} className="text-center p-2 bg-blue-50 border border-blue-200 rounded-md">
               <div className="text-lg font-bold text-blue-700">{item.number}</div>
               <div className="text-xs text-blue-600 mt-1">{item.days}d</div>
@@ -100,13 +101,28 @@ export default function TeerStatistics() {
         </div>
       </div>
 
-      {/* Longest Gaps */}
+      {/* Frequent Numbers - Shortest Gaps */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <h3 className="text-base font-semibold text-gray-800 mb-3 text-center">
-          📅 Longest Gaps
+          ⚡ Frequent Numbers (Shortest Gaps)
         </h3>
         <div className="grid grid-cols-5 gap-2">
-          {roundData.longestGaps.map((item) => (
+          {roundData.frequentNumbers?.map((item) => (
+            <div key={item.number} className="text-center p-2 bg-green-50 border border-green-200 rounded-md">
+              <div className="text-lg font-bold text-green-700">{item.number}</div>
+              <div className="text-xs text-green-600 mt-1">{item.days}d</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Non-Frequent Numbers - Longest Gaps */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <h3 className="text-base font-semibold text-gray-800 mb-3 text-center">
+          🐌 Non-Frequent Numbers (Longest Gaps)
+        </h3>
+        <div className="grid grid-cols-5 gap-2">
+          {roundData.nonFrequentNumbers?.map((item) => (
             <div key={item.number} className="text-center p-2 bg-purple-50 border border-purple-200 rounded-md">
               <div className="text-lg font-bold text-purple-700">{item.number}</div>
               <div className="text-xs text-purple-600 mt-1">{item.days}d</div>
@@ -115,76 +131,61 @@ export default function TeerStatistics() {
         </div>
       </div>
 
-      {/* Shortest Gaps */}
+      {/* Yearly Hot - Last 365 Rounds */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <h3 className="text-base font-semibold text-gray-800 mb-3 text-center">
-          ⚡ Shortest Gaps
+          📅 Yearly Hot (Last 365 Rounds)
         </h3>
         <div className="grid grid-cols-5 gap-2">
-          {roundData.shortestGaps.map((item) => (
+          {roundData.yearlyHot?.map((item) => (
             <div key={item.number} className="text-center p-2 bg-orange-50 border border-orange-200 rounded-md">
               <div className="text-lg font-bold text-orange-700">{item.number}</div>
-              <div className="text-xs text-orange-600 mt-1">{item.days}d</div>
+              <div className="text-xs text-orange-600 mt-1">{item.count}x</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* High Probability */}
+      {/* Yearly Cold - Last 365 Rounds */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <h3 className="text-base font-semibold text-gray-800 mb-3 text-center">
-          📊 High Probability
+          ❄️ Yearly Cold (Last 365 Rounds)
         </h3>
         <div className="grid grid-cols-5 gap-2">
-          {roundData.highProbability.map((item) => (
-            <div key={item.number} className="text-center p-2 bg-green-50 border border-green-200 rounded-md">
-              <div className="text-lg font-bold text-green-700">{item.number}</div>
-              <div className="text-xs text-green-600 mt-1">{item.probability}%</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Low Probability */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <h3 className="text-base font-semibold text-gray-800 mb-3 text-center">
-          📉 Low Probability
-        </h3>
-        <div className="grid grid-cols-5 gap-2">
-          {roundData.lowProbability.map((item) => (
+          {roundData.yearlyCold?.map((item) => (
             <div key={item.number} className="text-center p-2 bg-gray-100 border border-gray-300 rounded-md">
               <div className="text-lg font-bold text-gray-700">{item.number}</div>
-              <div className="text-xs text-gray-600 mt-1">{item.probability}%</div>
+              <div className="text-xs text-gray-600 mt-1">{item.count}x</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Trending Up */}
+      {/* All Time Hot */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <h3 className="text-base font-semibold text-gray-800 mb-3 text-center">
-          🔼 Trending Up
+          🏆 All Time Hot
         </h3>
         <div className="grid grid-cols-5 gap-2">
-          {roundData.trendingUp.map((item) => (
-            <div key={item.number} className="text-center p-2 bg-teal-50 border border-teal-200 rounded-md">
-              <div className="text-lg font-bold text-teal-700">{item.number}</div>
-              <div className="text-xs text-teal-600 mt-1">+{item.trend}</div>
+          {roundData.allTimeHot?.map((item) => (
+            <div key={item.number} className="text-center p-2 bg-yellow-50 border border-yellow-200 rounded-md">
+              <div className="text-lg font-bold text-yellow-700">{item.number}</div>
+              <div className="text-xs text-yellow-600 mt-1">{item.count}x</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Trending Down */}
+      {/* All Time Cold */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <h3 className="text-base font-semibold text-gray-800 mb-3 text-center">
-          🔽 Trending Down
+          🧊 All Time Cold
         </h3>
         <div className="grid grid-cols-5 gap-2">
-          {roundData.trendingDown.map((item) => (
-            <div key={item.number} className="text-center p-2 bg-pink-50 border border-pink-200 rounded-md">
-              <div className="text-lg font-bold text-pink-700">{item.number}</div>
-              <div className="text-xs text-pink-600 mt-1">{item.trend}</div>
+          {roundData.allTimeCold?.map((item) => (
+            <div key={item.number} className="text-center p-2 bg-indigo-50 border border-indigo-200 rounded-md">
+              <div className="text-lg font-bold text-indigo-700">{item.number}</div>
+              <div className="text-xs text-indigo-600 mt-1">{item.count}x</div>
             </div>
           ))}
         </div>
