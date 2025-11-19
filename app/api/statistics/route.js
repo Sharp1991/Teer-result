@@ -1,3 +1,41 @@
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
+
+export async function GET() {
+  try {
+    const { data: results, error } = await supabase
+      .from('teer_results')
+      .select('*')
+      .order('id', { ascending: false });
+
+    if (error) throw error;
+
+    const statistics = {
+      firstRound: calculateFirstRoundStatistics(results || []),
+      secondRound: calculateSecondRoundStatistics(results || [])
+    };
+
+    return NextResponse.json({
+      success: true,
+      statistics,
+      lastUpdated: new Date().toISOString(),
+      totalRecords: results?.length || 0
+    });
+
+  } catch (error) {
+    console.error('Statistics API error:', error);
+    return NextResponse.json({
+      success: false,
+      error: "Could not generate statistics"
+    }, { status: 500 });
+  }
+}
+
 // FIRST ROUND ONLY STATISTICS
 function calculateFirstRoundStatistics(results) {
   const last60Rounds = results.slice(0, 60);
@@ -89,7 +127,7 @@ function calculateFrequentNumbers(roundNumbers, allResults, roundType) {
   const gaps = calculateAllGaps(roundNumbers, allResults, roundType);
 
   return gaps
-    .filter(gap => gap.days > 0)
+    .filter(gap => gap.days > 0 && gap.days < 999)
     .sort((a, b) => a.days - b.days)
     .slice(0, 10);
 }
@@ -99,7 +137,7 @@ function calculateNonFrequentNumbers(roundNumbers, allResults, roundType) {
   const gaps = calculateAllGaps(roundNumbers, allResults, roundType);
 
   return gaps
-    .filter(gap => gap.days > 0)
+    .filter(gap => gap.days > 0 && gap.days < 999)
     .sort((a, b) => b.days - a.days)
     .slice(0, 10);
 }
