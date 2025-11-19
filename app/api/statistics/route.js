@@ -241,3 +241,4 @@ function calculateAllTrends(currentPeriod, previousPeriod) {
   
   return trends;
 }
+}
