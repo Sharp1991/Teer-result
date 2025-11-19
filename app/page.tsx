@@ -1,5 +1,6 @@
 import TeerResults from './components/TeerResults'
 import AIPredictionButton from './components/AIPredictionButton'
+import TeerStatistics from './components/TeerStatistics'
 import Head from 'next/head'
 
 export default function Home() {
@@ -94,6 +95,9 @@ export default function Home() {
               <AIPredictionButton />
             </div>
           </div>
+
+          {/* Statistics Card */}
+          <TeerStatistics />
 
           {/* Extended History Card */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
