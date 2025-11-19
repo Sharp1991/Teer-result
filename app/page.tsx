@@ -1,6 +1,5 @@
 import TeerResults from './components/TeerResults'
 import AIPredictionButton from './components/AIPredictionButton'
-import TeerStatistics from './components/TeerStatistics'
 import Head from 'next/head'
 
 export default function Home() {
@@ -96,14 +95,32 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Statistics Card */}
-          <TeerStatistics />
+          {/* Statistics Button Card */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            <div className="border-b border-gray-200 p-4 bg-gradient-to-r from-blue-50 to-indigo-50">
+              <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                <span className="text-blue-600 mr-2">📊</span>
+                Advanced Statistics & Analytics
+              </h3>
+            </div>
+            <div className="p-6 text-center">
+              <p className="text-gray-600 mb-4">
+                Explore detailed number patterns, hot numbers, due numbers, and comprehensive analytics
+              </p>
+              <a 
+                href="/statistics" 
+                className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium inline-block"
+              >
+                View Full Statistics ↗
+              </a>
+            </div>
+          </div>
 
           {/* Extended History Card */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
             <div className="border-b border-gray-200 p-4 bg-gradient-to-r from-blue-50 to-indigo-50">
               <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-                <span className="text-blue-600 mr-2">📊</span>
+                <span className="text-blue-600 mr-2">📈</span>
                 Extended Result History
               </h3>
             </div>
