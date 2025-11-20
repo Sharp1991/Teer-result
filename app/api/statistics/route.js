@@ -10,16 +10,14 @@ export async function GET() {
   try {
     const { data: results, error } = await supabase
       .from('teer_results')
-      .select('*');
+      .select('*')
+      .order('Date', { ascending: false }); // Use capital D
 
     if (error) throw error;
 
-    // Sort results by date ascending (oldest first)
-    const sortedResults = [...results].sort((a, b) => new Date(a.date) - new Date(b.date));
-
     const statistics = {
-      firstRound: calculateFirstRoundStatistics(sortedResults),
-      secondRound: calculateSecondRoundStatistics(sortedResults)
+      firstRound: calculateFirstRoundStatistics(results || []),
+      secondRound: calculateSecondRoundStatistics(results || [])
     };
 
     return NextResponse.json({
@@ -38,10 +36,12 @@ export async function GET() {
   }
 }
 
-// FIRST ROUND STATISTICS
+// ------------------ STATISTICS ------------------
+
+// FIRST ROUND
 function calculateFirstRoundStatistics(results) {
-  const last60Rounds = results.slice(-60);
-  const last365Rounds = results.slice(-365);
+  const last60Rounds = results.slice(0, 60);
+  const last365Rounds = results.slice(0, 365);
 
   const firstRoundNumbers = results.map(r => r.first_round);
   const last60FirstRound = last60Rounds.map(r => r.first_round);
@@ -59,10 +59,10 @@ function calculateFirstRoundStatistics(results) {
   };
 }
 
-// SECOND ROUND STATISTICS
+// SECOND ROUND
 function calculateSecondRoundStatistics(results) {
-  const last60Rounds = results.slice(-60);
-  const last365Rounds = results.slice(-365);
+  const last60Rounds = results.slice(0, 60);
+  const last365Rounds = results.slice(0, 365);
 
   const secondRoundNumbers = results.map(r => r.second_round);
   const last60SecondRound = last60Rounds.map(r => r.second_round);
@@ -80,30 +80,29 @@ function calculateSecondRoundStatistics(results) {
   };
 }
 
-// HOT NUMBERS
+// ------------------ HELPERS ------------------
+
+// Hot numbers
 function calculateFrequency(roundNumbers, limit = 10) {
   const frequency = {};
-  roundNumbers.forEach(number => {
-    frequency[number] = (frequency[number] || 0) + 1;
+  roundNumbers.forEach(num => {
+    frequency[num] = (frequency[num] || 0) + 1;
   });
 
   return Object.entries(frequency)
     .sort((a, b) => b[1] - a[1])
     .slice(0, limit)
-    .map(([number, count]) => ({
-      number: parseInt(number),
-      count
-    }));
+    .map(([number, count]) => ({ number: parseInt(number), count }));
 }
 
-// DUE NUMBERS — Longest since last appearance
+// Due numbers (longest since last appearance)
 function calculateDueNumbers(roundNumbers, allResults, roundType) {
   const lastAppearance = {};
   const today = new Date();
 
   allResults.forEach(result => {
     const number = result[roundType];
-    const resultDate = new Date(result.date);
+    const resultDate = new Date(result.Date); // Use capital D
     if (!lastAppearance[number] || resultDate > lastAppearance[number]) {
       lastAppearance[number] = resultDate;
     }
@@ -114,37 +113,30 @@ function calculateDueNumbers(roundNumbers, allResults, roundType) {
     const daysSince = lastAppearance[num]
       ? Math.floor((today - lastAppearance[num]) / (1000 * 60 * 60 * 24))
       : 999;
+
     dueNumbers.push({ number: num, days: daysSince });
   }
 
-  return dueNumbers
-    .sort((a, b) => b.days - a.days)
-    .slice(0, 10);
+  return dueNumbers.sort((a, b) => b.days - a.days).slice(0, 10);
 }
 
-// FREQUENT NUMBERS — Shortest average gap
+// Frequent numbers (shortest average gap)
 function calculateFrequentNumbers(roundNumbers, allResults, roundType) {
-  const gaps = calculateAllGaps(roundNumbers, allResults, roundType);
-  return gaps
-    .filter(gap => gap.days > 0 && gap.days < 999)
-    .sort((a, b) => a.days - b.days)
-    .slice(0, 10);
+  const gaps = calculateAllGaps(allResults, roundType);
+  return gaps.filter(g => g.days > 0 && g.days < 999).sort((a, b) => a.days - b.days).slice(0, 10);
 }
 
-// NON-FREQUENT NUMBERS — Longest average gap
+// Non-frequent numbers (longest average gap)
 function calculateNonFrequentNumbers(roundNumbers, allResults, roundType) {
-  const gaps = calculateAllGaps(roundNumbers, allResults, roundType);
-  return gaps
-    .filter(gap => gap.days > 0 && gap.days < 999)
-    .sort((a, b) => b.days - a.days)
-    .slice(0, 10);
+  const gaps = calculateAllGaps(allResults, roundType);
+  return gaps.filter(g => g.days > 0 && g.days < 999).sort((a, b) => b.days - a.days).slice(0, 10);
 }
 
-// COLD NUMBERS — Least appearances
+// Cold numbers
 function calculateColdNumbers(roundNumbers, limit = 10) {
   const frequency = {};
-  roundNumbers.forEach(number => {
-    frequency[number] = (frequency[number] || 0) + 1;
+  roundNumbers.forEach(num => {
+    frequency[num] = (frequency[num] || 0) + 1;
   });
 
   const allNumbers = [];
@@ -152,38 +144,32 @@ function calculateColdNumbers(roundNumbers, limit = 10) {
     allNumbers.push({ number: num, count: frequency[num] || 0 });
   }
 
-  return allNumbers
-    .sort((a, b) => a.count - b.count)
-    .slice(0, limit);
+  return allNumbers.sort((a, b) => a.count - b.count).slice(0, limit);
 }
 
-// GAP HELPER
-function calculateAllGaps(roundNumbers, allResults, roundType) {
+// Calculate all gaps
+function calculateAllGaps(allResults, roundType) {
   const appearances = {};
-  const sorted = [...allResults].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const sorted = [...allResults].sort((a, b) => new Date(a.Date) - new Date(b.Date)); // Capital D
 
   sorted.forEach(result => {
     const number = result[roundType];
-    const date = new Date(result.date);
+    const date = new Date(result.Date);
     if (!appearances[number]) appearances[number] = [];
     appearances[number].push(date);
   });
 
   const gaps = [];
-
   for (let num = 0; num <= 99; num++) {
     if (appearances[num] && appearances[num].length > 1) {
       const gapDays = [];
       for (let i = 1; i < appearances[num].length; i++) {
-        const gap = Math.floor((appearances[num][i] - appearances[num][i - 1]) / (1000 * 60 * 60 * 24));
-        gapDays.push(gap);
+        gapDays.push(Math.floor((appearances[num][i] - appearances[num][i - 1]) / (1000 * 60 * 60 * 24)));
       }
       const avgGap = gapDays.reduce((a, b) => a + b, 0) / gapDays.length;
       gaps.push({ number: num, days: Math.round(avgGap) });
-    } else if (appearances[num]) {
-      gaps.push({ number: num, days: 0 }); // appeared only once
     } else {
-      gaps.push({ number: num, days: 999 }); // never appeared
+      gaps.push({ number: num, days: 999 });
     }
   }
 
