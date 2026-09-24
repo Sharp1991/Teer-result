@@ -270,16 +270,21 @@ export default function TeerResults() {
   return (
     <div className="space-y-6">
       {/* Navigation */}
-      <nav className="sticky top-0 z-10 -mx-4 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur">
+      <nav className="sticky top-0 z-10 -mx-4 border-b border-slate-800 bg-slate-950 px-4 py-3 shadow-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+          <button
+            onClick={() => setTab('overview')}
+            className="text-left"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
               Shillong
             </p>
-            <p className="font-bold text-slate-900">Teer Results</p>
-          </div>
+            <p className="mt-0.5 text-sm font-black tracking-tight text-white">
+              TEER RESULTS
+            </p>
+          </button>
 
-          <div className="flex gap-1 rounded-xl bg-slate-100 p-1">
+          <div className="flex rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-inner">
             {[
               ['overview', 'Results'],
               ['statistics', 'Statistics'],
@@ -288,10 +293,10 @@ export default function TeerResults() {
               <button
                 key={value}
                 onClick={() => setTab(value as Tab)}
-                className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                className={`rounded-lg px-3 py-2 text-xs font-bold transition-all ${
                   tab === value
-                    ? 'bg-white text-slate-900 shadow-sm'
-                    : 'text-slate-500'
+                    ? 'bg-white text-slate-950 shadow-sm'
+                    : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                 }`}
               >
                 {label}
