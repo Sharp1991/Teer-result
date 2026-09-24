@@ -71,154 +71,69 @@ function StatCard({
   );
 }
 
-function RoundStatistics({
-  title,
-  values,
-}: {
-  title: string;
-  values: string[];
-}) {
-  const frequency = getFrequency(values);
-  const validValues = values.filter(validNumber);
+function getPeriodResults(
+  results: TeerResult[],
+  field: 'firstRound' | 'secondRound',
+  periodKey: string
+) {
+  const valid = results.filter((r) => validNumber(r[field]))
 
-  const ranked = Object.entries(frequency)
-    .filter(([, count]) => count > 0)
-    .sort((a, b) => b[1] - a[1]);
+  if (periodKey === '20') return valid.slice(-20)
+  if (periodKey === '50') return valid.slice(-50)
+  if (periodKey === '100') return valid.slice(-100)
+  if (periodKey === '500') return valid.slice(-500)
 
-  const odd = validValues.filter((v) => Number(v) % 2 !== 0).length;
-  const even = validValues.length - odd;
+  if (periodKey === '1y' || periodKey === '2y') {
+    if (!results.length) return []
 
-  const low = validValues.filter((v) => Number(v) < 50).length;
-  const high = validValues.length - low;
+    const latestDate = new Date(
+      `${results[results.length - 1].date}T00:00:00`
+    )
 
-  const firstDigits = Array(10).fill(0);
-  const lastDigits = Array(10).fill(0);
+    const startDate = new Date(latestDate)
+    startDate.setFullYear(
+      startDate.getFullYear() - (periodKey === '1y' ? 1 : 2)
+    )
 
-  validValues.forEach((v) => {
-    firstDigits[Number(v[0])]++;
-    lastDigits[Number(v[1])]++;
-  });
+    return valid.filter(
+      (r) => new Date(`${r.date}T00:00:00`) >= startDate
+    )
+  }
 
-  return (
-    <section className="space-y-5">
-      <div>
-        <h3 className="text-lg font-bold text-slate-900">{title}</h3>
-        <p className="text-sm text-slate-500">
-          Historical statistics for this round only.
-        </p>
-      </div>
+  return valid
+}
 
-      <div className="grid grid-cols-2 gap-3">
-        <StatCard
-          label="Records"
-          value={validValues.length.toString()}
-          description="Usable results"
-        />
-        <StatCard
-          label="Unique"
-          value={new Set(validValues).size.toString()}
-          description="Different numbers"
-        />
-        <StatCard
-          label="Odd"
-          value={odd.toString()}
-          description="Odd results"
-        />
-        <StatCard
-          label="Even"
-          value={even.toString()}
-          description="Even results"
-        />
-      </div>
+function getLongestMissing(
+  results: TeerResult[],
+  field: 'firstRound' | 'secondRound'
+) {
+  const valid = results.filter((r) => validNumber(r[field]))
+  const latestIndex = valid.length - 1
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <h4 className="font-semibold text-slate-900">Range distribution</h4>
+  return Array.from({ length: 100 }, (_, i) => {
+    const number = i.toString().padStart(2, '0')
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <div className="rounded-xl bg-slate-50 p-4">
-            <p className="text-xs text-slate-500">00–49</p>
-            <p className="mt-1 text-xl font-bold">{low}</p>
-          </div>
+    let lastIndex = -1
+    let lastDate: string | null = null
 
-          <div className="rounded-xl bg-slate-50 p-4">
-            <p className="text-xs text-slate-500">50–99</p>
-            <p className="mt-1 text-xl font-bold">{high}</p>
-          </div>
-        </div>
-      </div>
+    for (let j = latestIndex; j >= 0; j--) {
+      if (valid[j][field] === number) {
+        lastIndex = j
+        lastDate = valid[j].date
+        break
+      }
+    }
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <h4 className="font-semibold text-slate-900">Number frequency</h4>
-        <p className="mt-1 text-xs text-slate-500">
-          Frequency is descriptive historical data, not a prediction.
-        </p>
-
-        {ranked.length === 0 ? (
-          <p className="py-8 text-center text-sm text-slate-400">
-            More historical data is required.
-          </p>
-        ) : (
-          <div className="mt-4 space-y-2">
-            {ranked.slice(0, 10).map(([number, count]) => (
-              <div key={number} className="flex items-center gap-3">
-                <span className="w-8 font-mono font-bold text-slate-800">
-                  {number}
-                </span>
-
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
-                  <div
-                    className="h-full rounded-full bg-slate-700"
-                    style={{
-                      width: `${Math.max(
-                        8,
-                        (count / ranked[0][1]) * 100
-                      )}%`,
-                    }}
-                  />
-                </div>
-
-                <span className="w-8 text-right text-sm font-semibold text-slate-600">
-                  {count}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <h4 className="font-semibold text-slate-900">First digit</h4>
-
-        <div className="mt-4 grid grid-cols-5 gap-2">
-          {firstDigits.map((count, digit) => (
-            <div
-              key={digit}
-              className="rounded-xl bg-slate-50 p-3 text-center"
-            >
-              <p className="font-mono font-bold">{digit}</p>
-              <p className="mt-1 text-xs text-slate-500">{count}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <h4 className="font-semibold text-slate-900">Last digit</h4>
-
-        <div className="mt-4 grid grid-cols-5 gap-2">
-          {lastDigits.map((count, digit) => (
-            <div
-              key={digit}
-              className="rounded-xl bg-slate-50 p-3 text-center"
-            >
-              <p className="font-mono font-bold">{digit}</p>
-              <p className="mt-1 text-xs text-slate-500">{count}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+    return {
+      number,
+      gap: lastIndex === -1 ? valid.length : latestIndex - lastIndex,
+      lastDate,
+    }
+  }).sort(
+    (a, b) =>
+      b.gap - a.gap ||
+      a.number.localeCompare(b.number)
+  )
 }
 
 export default function TeerResults() {
@@ -228,6 +143,8 @@ export default function TeerResults() {
   const [error, setError] = useState('');
   const [tab, setTab] = useState<Tab>('overview');
   const [historyPage, setHistoryPage] = useState(1);
+  const [statsRound, setStatsRound] = useState<'firstRound' | 'secondRound'>('firstRound');
+  const [statsPeriod, setStatsPeriod] = useState('100');
   const historyPerPage = 20;
 
   const fetchResults = async () => {
@@ -290,6 +207,62 @@ export default function TeerResults() {
 
   const firstRoundValues = allResults.map((r) => r.firstRound);
   const secondRoundValues = allResults.map((r) => r.secondRound);
+
+  const chronologicalResults = [...allResults].sort(
+    (a, b) =>
+      new Date(`${a.date}T00:00:00`).getTime() -
+      new Date(`${b.date}T00:00:00`).getTime()
+  );
+
+  const validStatsResults = chronologicalResults.filter(
+    (r) => validNumber(r[statsRound])
+  );
+
+  const latestStatsDate = chronologicalResults.length
+    ? chronologicalResults[chronologicalResults.length - 1].date
+    : '';
+
+  let statsResults = validStatsResults;
+
+  if (statsPeriod === '20') {
+    statsResults = validStatsResults.slice(-20);
+  } else if (statsPeriod === '50') {
+    statsResults = validStatsResults.slice(-50);
+  } else if (statsPeriod === '100') {
+    statsResults = validStatsResults.slice(-100);
+  } else if (statsPeriod === '500') {
+    statsResults = validStatsResults.slice(-500);
+  } else if (statsPeriod === '1y' || statsPeriod === '2y') {
+    const latestDate = new Date(`${latestStatsDate}T00:00:00`);
+    const startDate = new Date(latestDate);
+
+    startDate.setFullYear(
+      startDate.getFullYear() - (statsPeriod === '1y' ? 1 : 2)
+    );
+
+    statsResults = validStatsResults.filter(
+      (r) => new Date(`${r.date}T00:00:00`) >= startDate
+    );
+  }
+
+  const statsFrequency = getFrequency(
+    statsResults.map((r) => r[statsRound])
+  );
+
+  const mostAppeared = Object.entries(statsFrequency)
+    .map(([number, count]) => ({ number, count }))
+    .sort(
+      (a, b) =>
+        b.count - a.count ||
+        a.number.localeCompare(b.number)
+    )
+    .slice(0, 10);
+
+  const longestMissing = getLongestMissing(
+    chronologicalResults,
+    statsRound
+  ).slice(0, 10);
+
   const historyTotalPages = Math.ceil(allResults.length / historyPerPage);
   const historyStart = (historyPage - 1) * historyPerPage;
   const paginatedHistory = allResults.slice(historyStart, historyStart + historyPerPage);
@@ -477,22 +450,112 @@ export default function TeerResults() {
             <h1 className="mt-1 text-2xl font-black text-slate-900 sm:text-3xl">
               Teer Statistics
             </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-              Statistical summaries of recorded results. First Round and
-              Second Round remain completely separate.
+            <p className="mt-2 text-sm text-slate-500">
+              Frequency and missing-number statistics from recorded results.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-            <strong>Current view:</strong> statistics are calculated from the
-            results currently returned by the existing API. The full historical
-            base dataset will be connected next.
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex rounded-xl bg-slate-100 p-1">
+              {[
+                ['firstRound', 'First Round'],
+                ['secondRound', 'Second Round'],
+              ].map(([value, label]) => (
+                <button
+                  key={value}
+                  onClick={() =>
+                    setStatsRound(value as 'firstRound' | 'secondRound')
+                  }
+                  className={`rounded-lg px-4 py-2 text-xs font-semibold ${
+                    statsRound === value
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-500'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <select
+              value={statsPeriod}
+              onChange={(e) => setStatsPeriod(e.target.value)}
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700"
+            >
+              <option value="20">Last 20 draws</option>
+              <option value="50">Last 50 draws</option>
+              <option value="100">Last 100 draws</option>
+              <option value="500">Last 500 draws</option>
+              <option value="1y">Last 1 year</option>
+              <option value="2y">Last 2 years</option>
+              <option value="all">All time</option>
+            </select>
           </div>
 
-          <RoundStatistics title="First Round" values={firstRoundValues} />
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-bold text-slate-900">
+                    Top 10 Most Appeared
+                  </h2>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {statsResults.length} draws analysed
+                  </p>
+                </div>
+              </div>
 
-          <div className="border-t border-slate-200 pt-8">
-            <RoundStatistics title="Second Round" values={secondRoundValues} />
+              <div className="mt-4 divide-y divide-slate-100">
+                {mostAppeared.map((item, index) => (
+                  <div
+                    key={item.number}
+                    className="flex items-center justify-between py-2.5"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="w-5 text-xs font-bold text-slate-400">
+                        {index + 1}
+                      </span>
+                      <span className="font-mono text-lg font-black text-slate-900">
+                        {item.number}
+                      </span>
+                    </div>
+                    <span className="text-sm font-semibold text-slate-600">
+                      {item.count} times
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h2 className="font-bold text-slate-900">
+                Top 10 Longest Missing
+              </h2>
+              <p className="mt-1 text-xs text-slate-500">
+                Current gap based on all recorded results
+              </p>
+
+              <div className="mt-4 divide-y divide-slate-100">
+                {longestMissing.map((item, index) => (
+                  <div
+                    key={item.number}
+                    className="flex items-center justify-between py-2.5"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="w-5 text-xs font-bold text-slate-400">
+                        {index + 1}
+                      </span>
+                      <span className="font-mono text-lg font-black text-slate-900">
+                        {item.number}
+                      </span>
+                    </div>
+                    <span className="text-sm font-semibold text-slate-600">
+                      {item.gap} draws
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
       )}
