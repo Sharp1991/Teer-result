@@ -10,14 +10,14 @@ export const metadata: Metadata = {
     template: '%s | Shillong Teer Results',
   },
   description:
-    'Check today’s Shillong Teer results, First Round and Second Round numbers, previous results, and Teer statistics.',
+    'Check the latest Shillong Teer result today, First Round and Second Round numbers, previous results, and Teer statistics.',
   alternates: {
     canonical: '/',
   },
   openGraph: {
     title: 'Shillong Teer Results Today',
     description:
-      'Check today’s Shillong Teer First Round and Second Round results, previous results, and statistics.',
+      'Check the latest Shillong Teer result today, First Round and Second Round numbers, previous results, and Teer statistics.',
     url: siteUrl,
     siteName: 'Shillong Teer Results',
     type: 'website',
