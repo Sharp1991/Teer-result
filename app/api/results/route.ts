@@ -24,7 +24,7 @@ export async function GET() {
     const payload = {
       success: true,
       today,
-      history: history.slice(0, 7),
+      history: history,
       scrapedAt: new Date().toISOString(),
       note: "Live data from teertooday.com"
     };

@@ -227,6 +227,8 @@ export default function TeerResults() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [tab, setTab] = useState<Tab>('overview');
+  const [historyPage, setHistoryPage] = useState(1);
+  const historyPerPage = 20;
 
   const fetchResults = async () => {
     try {
@@ -288,6 +290,9 @@ export default function TeerResults() {
 
   const firstRoundValues = allResults.map((r) => r.firstRound);
   const secondRoundValues = allResults.map((r) => r.secondRound);
+  const historyTotalPages = Math.ceil(allResults.length / historyPerPage);
+  const historyStart = (historyPage - 1) * historyPerPage;
+  const paginatedHistory = allResults.slice(historyStart, historyStart + historyPerPage);
 
   return (
     <div className="space-y-6">
@@ -513,7 +518,7 @@ export default function TeerResults() {
               <span>SR</span>
             </div>
 
-            {allResults.map((result, index) => (
+            {paginatedHistory.map((result, index) => (
               <div
                 key={`${result.date}-${index}`}
                 className="grid grid-cols-[1fr_auto_auto] items-center gap-4 border-b border-slate-100 px-4 py-4 last:border-0"
@@ -543,6 +548,30 @@ export default function TeerResults() {
               </p>
             )}
           </div>
+
+          {allResults.length > 0 && (
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <button
+                onClick={() => setHistoryPage((page) => Math.max(1, page - 1))}
+                disabled={historyPage === 1}
+                className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Previous
+              </button>
+
+              <p className="text-xs text-slate-500">
+                {historyStart + 1}–{Math.min(historyStart + historyPerPage, allResults.length)} of {allResults.length}
+              </p>
+
+              <button
+                onClick={() => setHistoryPage((page) => Math.min(historyTotalPages, page + 1))}
+                disabled={historyPage === historyTotalPages}
+                className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </section>
       )}
 
