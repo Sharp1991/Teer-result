@@ -1,26 +1,20 @@
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from 'next'
+
+const baseUrl = 'https://www.shillongteerresults.co.in'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://www.shillongteerresults.co.in";
-
   return [
     {
-      url: `${baseUrl}/`,
+      url: baseUrl,
       lastModified: new Date(),
-      changeFrequency: "hourly",
+      changeFrequency: 'hourly',
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/results`,
+      url: `${baseUrl}/statistics`,
       lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.9,
+      changeFrequency: 'daily',
+      priority: 0.8,
     },
-    {
-      url: `${baseUrl}/previous-results`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.9,
-    }
-  ];
+  ]
 }
