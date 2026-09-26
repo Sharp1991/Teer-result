@@ -1,14 +1,14 @@
 import TeerStatistics from '../components/TeerStatistics'
 
 export const metadata = {
-  title: 'Teer Statistics & Analytics',
+  title: 'Shillong Teer Analytics & Statistics | Number Frequency',
   description:
     'Explore Shillong Teer statistics, historical number frequency, hot numbers, missing numbers, and round-by-round analysis.',
   alternates: {
     canonical: '/statistics',
   },
   openGraph: {
-    title: 'Teer Statistics & Analytics',
+    title: 'Shillong Teer Analytics & Statistics | Number Frequency',
     description:
       'Explore Shillong Teer statistics, historical number frequency, hot numbers, missing numbers, and round-by-round analysis.',
     url: '/statistics',
