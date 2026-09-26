@@ -37,8 +37,8 @@ export default function DreamNumberClient() {
   }, [query]);
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="border-b bg-white">
+    <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+      <section className="border-b border-green-100 bg-white/90">
         <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
           <nav className="mb-6 border-b border-slate-100 pb-4">
             <Link
@@ -101,7 +101,7 @@ export default function DreamNumberClient() {
             </p>
           </div>
         ) : filteredDreams.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-white px-6 py-12 text-center">
+          <div className="rounded-2xl border border-green-100 bg-white/90 px-6 py-12 text-center shadow-sm">
             <h2 className="text-lg font-semibold text-slate-900">
               No matching dream found
             </h2>
@@ -135,7 +135,7 @@ export default function DreamNumberClient() {
               {filteredDreams.map((dream, index) => (
                 <article
                   key={`${dream.slug}-${index}`}
-                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                  className="rounded-2xl border border-green-100 bg-white/90 p-5 shadow-sm"
                 >
                   <span className="inline-block rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
                     {dream.category}
@@ -184,7 +184,7 @@ export default function DreamNumberClient() {
         )}
       </section>
 
-      <section className="border-t bg-white">
+      <section className="border-t border-green-100 bg-white/90">
         <div className="mx-auto max-w-5xl px-4 py-8 text-center text-sm leading-6 text-slate-500 sm:px-6">
           Dream-number associations shown here are traditional, community and
           editorial references. They are not scientifically validated
