@@ -302,6 +302,13 @@ export default function TeerResults() {
                 {label}
               </button>
             ))}
+
+              <a
+                href="/dream-number"
+                className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
+              >
+                Dream Number
+              </a>
           </div>
         </div>
       </nav>
