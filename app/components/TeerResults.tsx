@@ -730,6 +730,25 @@ export default function TeerResults({
         </section>
       )}
 
+      <section className="mt-8 rounded-2xl border border-green-100 bg-green-50 px-5 py-6 text-center shadow-sm">
+        <h2 className="text-lg font-bold text-slate-900">
+          {language === 'bn' ? 'তীর সম্পর্কে তথ্য খুঁজছেন?' : 'Looking for Teer information?'}
+        </h2>
+        <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+          {language === 'bn'
+            ? 'স্থানীয় তীর কাউন্টার এবং ফলাফল সম্পর্কে তথ্যের জন্য WhatsApp-এ আমাদের সঙ্গে যোগাযোগ করুন।'
+            : 'Get in touch with us on WhatsApp for information about local Teer counters and results.'}
+        </p>
+        <a
+          href="https://wa.me/918794496929"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex items-center rounded-xl bg-green-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-green-700"
+        >
+          {language === 'bn' ? 'WhatsApp-এ যোগাযোগ করুন' : 'WhatsApp Us'}
+        </a>
+      </section>
+
       <footer className="border-t border-slate-200 py-8 text-center">
         <p className="text-xs text-slate-400">
           Shillong Teer Results · Historical statistics and results
