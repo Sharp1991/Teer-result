@@ -150,6 +150,7 @@ export default function TeerResults({
     dreamNumber: '{t.dreamNumber}',
     todaysResult: "TODAY'S TEER RESULT",
     noResult: 'No result',
+    refresh: 'Refresh',
     latestAvailableResult: 'Latest available result',
     recentResults: 'Recent Results',
     latestAvailableResults: 'Latest available results',
@@ -378,7 +379,7 @@ export default function TeerResults({
                   {todayResult?.location || 'Shillong'} ·{' '}
                   {todayResult?.status === 'live'
                     ? 'Live result'
-                    : 'Latest available result'}
+                    : t.latestAvailableResult}
                 </p>
               </div>
 
@@ -386,7 +387,7 @@ export default function TeerResults({
                 onClick={fetchResults}
                 className="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold hover:bg-slate-800"
               >
-                ↻ Refresh
+                ↻ {t.refresh}
               </button>
             </div>
 
