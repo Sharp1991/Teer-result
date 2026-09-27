@@ -156,6 +156,7 @@ export default function TeerResults({
     latestAvailableResults: 'Latest available results',
     dataCentre: 'Data Centre',
     openDataCentre: 'Open Data Centre',
+    frequencyDescription: 'Frequency and missing-number statistics from recorded results.',
     exploreStatistics: 'Teer Statistics',
     statisticsDescription: 'Explore historical Teer statistics.',
     last20: 'Last 20 draws',
@@ -417,10 +418,10 @@ export default function TeerResults({
             <div className="mb-3 flex items-end justify-between">
               <div>
                 <h2 className="text-xl font-bold text-slate-900">
-                  Recent Results
+                  {t.recentResults}
                 </h2>
                 <p className="text-sm text-slate-500">
-                  Latest available results
+                  {t.latestAvailableResults}
                 </p>
               </div>
 
@@ -478,11 +479,11 @@ export default function TeerResults({
           {/* Data Centre teaser */}
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
-              Data Centre
+              {t.dataCentre}
             </p>
 
             <h2 className="mt-1 text-xl font-bold text-slate-900">
-              Explore Teer statistics
+              {t.exploreStatistics}
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-slate-500">
@@ -505,13 +506,13 @@ export default function TeerResults({
         <section className="space-y-8">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
-              Data Centre
+              {t.dataCentre}
             </p>
             <h1 className="mt-1 text-2xl font-black text-slate-900 sm:text-3xl">
-              Teer Statistics
+              {t.exploreStatistics}
             </h1>
             <p className="mt-2 text-sm text-slate-500">
-              Frequency and missing-number statistics from recorded results.
+              {t.frequencyDescription}
             </p>
           </div>
 
@@ -624,13 +625,13 @@ export default function TeerResults({
         <section>
           <div className="mb-5">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
-              Archive
+              {t.archive}
             </p>
             <h1 className="mt-1 text-2xl font-black text-slate-900 sm:text-3xl">
-              Historical Results
+              {t.historicalResults}
             </h1>
             <p className="mt-2 text-sm text-slate-500">
-              Recorded Shillong Teer results.
+              {t.recordedResults}
             </p>
           </div>
 
