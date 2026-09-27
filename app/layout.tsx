@@ -13,6 +13,11 @@ export const metadata: Metadata = {
     'Check the latest Shillong Teer result today, First Round and Second Round numbers, previous results, and Teer statistics.',
   alternates: {
     canonical: '/',
+    languages: {
+      en: '/',
+      bn: '/bn',
+      'x-default': '/',
+    },
   },
   openGraph: {
     title: 'Shillong Teer Results Today',
