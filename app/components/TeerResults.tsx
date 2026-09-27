@@ -182,7 +182,7 @@ export default function TeerResults({
     unableToLoad: 'Unable to load results',
     tryAgain: 'Try Again',
     networkError: 'Network error. Please check your connection.',
-    footer: 'Shillong Teer Results · Historical statistics and results',
+    footer: '{t.footer}',
   };
   const [todayResult, setTodayResult] = useState<TeerResult | null>(null);
   const [history, setHistory] = useState<TeerResult[]>([]);
@@ -226,7 +226,7 @@ export default function TeerResults({
     return (
       <div className="mx-auto max-w-6xl py-20 text-center">
         <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-slate-800" />
-        <p className="mt-4 text-sm text-slate-500">Loading results...</p>
+        <p className="mt-4 text-sm text-slate-500">{t.loading}</p>
       </div>
     );
   }
@@ -241,7 +241,7 @@ export default function TeerResults({
             onClick={fetchResults}
             className="mt-5 rounded-xl bg-red-700 px-5 py-2.5 text-sm font-semibold text-white"
           >
-            Try Again
+            {t.tryAgain}
           </button>
         </div>
       </div>
@@ -367,7 +367,7 @@ export default function TeerResults({
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-400">
-                  TODAY&apos;S TEER RESULT
+                  {t.todaysResult}
                 </p>
 
                 <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
@@ -541,12 +541,12 @@ export default function TeerResults({
               onChange={(e) => setStatsPeriod(e.target.value)}
               className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700"
             >
-              <option value="20">Last 20 draws</option>
-              <option value="50">Last 50 draws</option>
-              <option value="100">Last 100 draws</option>
-              <option value="500">Last 500 draws</option>
-              <option value="1y">Last 1 year</option>
-              <option value="2y">Last 2 years</option>
+              <option value="20">{t.last20}</option>
+              <option value="50">{t.last50}</option>
+              <option value="100">{t.last100}</option>
+              <option value="500">{t.last500}</option>
+              <option value="1y">{t.last1Year}</option>
+              <option value="2y">{t.last2Years}</option>
               <option value="all">All time</option>
             </select>
           </div>
@@ -559,7 +559,7 @@ export default function TeerResults({
                     Top 10 Most Appeared
                   </h2>
                   <p className="mt-1 text-xs text-slate-500">
-                    {statsResults.length} draws analysed
+                    {statsResults.length} {t.drawsAnalysed}
                   </p>
                 </div>
               </div>
@@ -609,7 +609,7 @@ export default function TeerResults({
                       </span>
                     </div>
                     <span className="text-sm font-semibold text-slate-600">
-                      {item.gap} draws
+                      {item.gap} {t.draws}
                     </span>
                   </div>
                 ))}
