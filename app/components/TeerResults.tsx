@@ -153,6 +153,7 @@ export default function TeerResults({
     refresh: 'Refresh',
     latestAvailableResult: 'Latest available result',
     recentResults: 'Recent Results',
+    viewAll: 'View all',
     latestAvailableResults: 'Latest available results',
     dataCentre: 'Data Centre',
     openDataCentre: 'Open Data Centre',
@@ -429,7 +430,7 @@ export default function TeerResults({
                 onClick={() => setTab('history')}
                 className="text-sm font-semibold text-slate-700"
               >
-                View all
+                {t.viewAll}
               </button>
             </div>
 
@@ -470,7 +471,7 @@ export default function TeerResults({
 
               {allResults.length === 0 && (
                 <p className="p-8 text-center text-sm text-slate-400">
-                  No results available.
+                  {t.noResultsAvailable}
                 </p>
               )}
             </div>
@@ -487,16 +488,14 @@ export default function TeerResults({
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-slate-500">
-              Examine historical frequencies, digit distributions, odd/even
-              patterns and number ranges. First Round and Second Round are
-              analysed independently.
+              {t.statisticsDescription}
             </p>
 
             <button
               onClick={() => setTab('statistics')}
               className="mt-4 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white"
             >
-              Open Data Centre
+              {t.openDataCentre}
             </button>
           </section>
         </>
@@ -558,7 +557,7 @@ export default function TeerResults({
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="font-bold text-slate-900">
-                    Top 10 Most Appeared
+                    {t.top10Appeared}
                   </h2>
                   <p className="mt-1 text-xs text-slate-500">
                     {statsResults.length} {t.drawsAnalysed}
@@ -590,10 +589,10 @@ export default function TeerResults({
 
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <h2 className="font-bold text-slate-900">
-                Top 10 Longest Missing
+                {t.top10Missing}
               </h2>
               <p className="mt-1 text-xs text-slate-500">
-                Current gap based on all recorded results
+                {t.currentGap}
               </p>
 
               <div className="mt-4 divide-y divide-slate-100">
@@ -680,7 +679,7 @@ export default function TeerResults({
                 disabled={historyPage === 1}
                 className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Previous
+                {t.previous}
               </button>
 
               <p className="text-xs text-slate-500">
@@ -692,7 +691,7 @@ export default function TeerResults({
                 disabled={historyPage === historyTotalPages}
                 className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Next
+                {t.next}
               </button>
             </div>
           )}
