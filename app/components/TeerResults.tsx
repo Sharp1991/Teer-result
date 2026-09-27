@@ -377,10 +377,10 @@ export default function TeerResults({
             ))}
 
               <a
-                href="/dream-number"
+                href={language === 'bn' ? '/bn/dream-number' : '/dream-number'}
                 className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
               >
-                Dream Number
+                {language === 'bn' ? 'স্বপ্নের নম্বর' : 'Dream Number'}
               </a>
           </div>
         </div>
