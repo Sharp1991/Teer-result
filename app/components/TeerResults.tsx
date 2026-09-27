@@ -386,7 +386,16 @@ export default function TeerResults({
         </div>
       </nav>
 
-      {tab === 'overview' && (
+              <div className="flex justify-end">
+          <a
+            href={language === 'bn' ? '/' : '/bn'}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+          >
+            {language === 'bn' ? 'English' : 'বাংলা'}
+          </a>
+        </div>
+
+        {tab === 'overview' && (
         <>
           {/* Hero */}
           <section className="rounded-3xl bg-slate-900 p-6 text-white shadow-lg sm:p-8">
