@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { bn } from '../../lib/i18n/bn';
 
 interface TeerResult {
   date: string;
@@ -136,7 +137,53 @@ function getLongestMissing(
   )
 }
 
-export default function TeerResults() {
+export default function TeerResults({
+  language = 'en',
+}: {
+  language?: 'en' | 'bn';
+}) {
+  const t = language === 'bn' ? bn : {
+    siteName: 'Shillong Teer Results',
+    results: 'Results',
+    statistics: 'Statistics',
+    history: 'History',
+    dreamNumber: '{t.dreamNumber}',
+    todaysResult: "TODAY'S TEER RESULT",
+    noResult: 'No result',
+    latestAvailableResult: 'Latest available result',
+    recentResults: 'Recent Results',
+    latestAvailableResults: 'Latest available results',
+    dataCentre: 'Data Centre',
+    openDataCentre: 'Open Data Centre',
+    exploreStatistics: 'Teer Statistics',
+    statisticsDescription: 'Explore historical Teer statistics.',
+    last20: 'Last 20 draws',
+    last50: 'Last 50 draws',
+    last100: 'Last 100 draws',
+    last500: 'Last 500 draws',
+    last1Year: 'Last 1 year',
+    last2Years: 'Last 2 years',
+    allTime: 'All time',
+    top10Appeared: 'Top 10 appeared',
+    drawsAnalysed: 'draws analysed',
+    times: 'times',
+    top10Missing: 'Top 10 missing',
+    currentGap: 'Current gap',
+    draws: 'draws',
+    archive: 'Archive',
+    historicalResults: 'Historical Results',
+    recordedResults: 'Recorded Shillong Teer results.',
+    date: 'Date',
+    previous: 'Previous',
+    next: 'Next',
+    noResultsAvailable: 'No results available.',
+    noHistoricalResults: 'No historical results available.',
+    loading: 'Loading results...',
+    unableToLoad: 'Unable to load results',
+    tryAgain: 'Try Again',
+    networkError: 'Network error. Please check your connection.',
+    footer: 'Shillong Teer Results · Historical statistics and results',
+  };
   const [todayResult, setTodayResult] = useState<TeerResult | null>(null);
   const [history, setHistory] = useState<TeerResult[]>([]);
   const [loading, setLoading] = useState(true);
@@ -286,9 +333,9 @@ export default function TeerResults() {
 
           <div className="flex rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-inner">
             {[
-              ['overview', 'Results'],
-              ['statistics', 'Statistics'],
-              ['history', 'History'],
+              ['overview', t.results],
+              ['statistics', t.statistics],
+              ['history', t.history],
             ].map(([value, label]) => (
               <button
                 key={value}
