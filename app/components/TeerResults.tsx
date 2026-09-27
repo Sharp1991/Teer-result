@@ -20,29 +20,39 @@ function displayNumber(value: string | number, language: 'en' | 'bn' = 'en') {
     : text;
 }
 
+const bnMonths = [
+  'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল',
+  'মে', 'জুন', 'জুলাই', 'আগস্ট',
+  'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর',
+];
+
 function formatDate(date: string, language: 'en' | 'bn' = 'en') {
   const d = new Date(date);
   if (Number.isNaN(d.getTime())) return date;
 
-  const formatted = d.toLocaleDateString(language === 'bn' ? 'bn-IN' : 'en-IN', {
+  if (language === 'bn') {
+    return `${displayNumber(d.getDate(), language)} ${bnMonths[d.getMonth()]} ${displayNumber(d.getFullYear(), language)}`;
+  }
+
+  return d.toLocaleDateString('en-IN', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
   });
-
-  return displayNumber(formatted, language);
 }
 
 function shortDate(date: string, language: 'en' | 'bn' = 'en') {
   const d = new Date(date);
   if (Number.isNaN(d.getTime())) return date;
 
-  const formatted = d.toLocaleDateString(language === 'bn' ? 'bn-IN' : 'en-IN', {
+  if (language === 'bn') {
+    return `${displayNumber(d.getDate(), language)} ${bnMonths[d.getMonth()]}`;
+  }
+
+  return d.toLocaleDateString('en-IN', {
     day: '2-digit',
     month: 'short',
   });
-
-  return displayNumber(formatted, language);
 }
 
 function validNumber(value: string) {
@@ -573,7 +583,7 @@ export default function TeerResults({
                     {t.top10Appeared}
                   </h2>
                   <p className="mt-1 text-xs text-slate-500">
-                    {statsResults.length} {t.drawsAnalysed}
+                    {displayNumber(statsResults.length, language)} {t.drawsAnalysed}
                   </p>
                 </div>
               </div>
@@ -586,14 +596,14 @@ export default function TeerResults({
                   >
                     <div className="flex items-center gap-3">
                       <span className="w-5 text-xs font-bold text-slate-400">
-                        {index + 1}
+                        {displayNumber(index + 1, language)}
                       </span>
                       <span className="font-mono text-lg font-black text-slate-900">
-                        {item.number}
+                        {displayNumber(item.number, language)}
                       </span>
                     </div>
                     <span className="text-sm font-semibold text-slate-600">
-                      {item.count} times
+                      {displayNumber(item.count, language)} {t.times}
                     </span>
                   </div>
                 ))}
@@ -616,14 +626,14 @@ export default function TeerResults({
                   >
                     <div className="flex items-center gap-3">
                       <span className="w-5 text-xs font-bold text-slate-400">
-                        {index + 1}
+                        {displayNumber(index + 1, language)}
                       </span>
                       <span className="font-mono text-lg font-black text-slate-900">
-                        {item.number}
+                        {displayNumber(item.number, language)}
                       </span>
                     </div>
                     <span className="text-sm font-semibold text-slate-600">
-                      {item.gap} {t.draws}
+                      {displayNumber(item.gap, language)} {t.draws}
                     </span>
                   </div>
                 ))}
@@ -696,7 +706,7 @@ export default function TeerResults({
               </button>
 
               <p className="text-xs text-slate-500">
-                {historyStart + 1}–{Math.min(historyStart + historyPerPage, allResults.length)} of {allResults.length}
+                {displayNumber(historyStart + 1, language)}–{displayNumber(Math.min(historyStart + historyPerPage, allResults.length), language)} {language === 'bn' ? 'এর মধ্যে' : 'of'} {displayNumber(allResults.length, language)}
               </p>
 
               <button
