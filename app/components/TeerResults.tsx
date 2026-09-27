@@ -13,23 +13,36 @@ interface TeerResult {
 
 type Tab = 'overview' | 'statistics' | 'history';
 
-function formatDate(date: string) {
+function displayNumber(value: string | number, language: 'en' | 'bn' = 'en') {
+  const text = String(value);
+  return language === 'bn'
+    ? text.replace(/\d/g, (digit) => '০১২৩৪৫৬৭৮৯'[Number(digit)])
+    : text;
+}
+
+function formatDate(date: string, language: 'en' | 'bn' = 'en') {
   const d = new Date(date);
   if (Number.isNaN(d.getTime())) return date;
-  return d.toLocaleDateString('en-IN', {
+
+  const formatted = d.toLocaleDateString(language === 'bn' ? 'bn-IN' : 'en-IN', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
   });
+
+  return displayNumber(formatted, language);
 }
 
-function shortDate(date: string) {
+function shortDate(date: string, language: 'en' | 'bn' = 'en') {
   const d = new Date(date);
   if (Number.isNaN(d.getTime())) return date;
-  return d.toLocaleDateString('en-IN', {
+
+  const formatted = d.toLocaleDateString(language === 'bn' ? 'bn-IN' : 'en-IN', {
     day: '2-digit',
     month: 'short',
   });
+
+  return displayNumber(formatted, language);
 }
 
 function validNumber(value: string) {
@@ -374,7 +387,7 @@ export default function TeerResults({
                 </p>
 
                 <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
-                  {todayResult ? formatDate(todayResult.date) : 'No result'}
+                  {todayResult ? formatDate(todayResult.date, language) : 'No result'}
                 </h1>
 
                 <p className="mt-2 text-sm text-slate-400">
@@ -399,7 +412,7 @@ export default function TeerResults({
                   First Round
                 </p>
                 <p className="mt-2 font-mono text-5xl font-black tracking-tight">
-                  {todayResult?.firstRound || '--'}
+                  {displayNumber(todayResult?.firstRound || '--', language)}
                 </p>
               </div>
 
@@ -408,7 +421,7 @@ export default function TeerResults({
                   Second Round
                 </p>
                 <p className="mt-2 font-mono text-5xl font-black tracking-tight">
-                  {todayResult?.secondRound || '--'}
+                  {displayNumber(todayResult?.secondRound || '--', language)}
                 </p>
               </div>
             </div>
@@ -442,7 +455,7 @@ export default function TeerResults({
                 >
                   <div>
                     <p className="font-semibold text-slate-900">
-                      {formatDate(result.date)}
+                      {formatDate(result.date, language)}
                     </p>
                     <p className="text-xs text-slate-500">
                       {result.location}
@@ -454,7 +467,7 @@ export default function TeerResults({
                       FR
                     </p>
                     <p className="font-mono text-lg font-bold text-slate-900">
-                      {result.firstRound || '--'}
+                      {displayNumber(result.firstRound || '--', language)}
                     </p>
                   </div>
 
@@ -463,7 +476,7 @@ export default function TeerResults({
                       SR
                     </p>
                     <p className="font-mono text-lg font-bold text-slate-900">
-                      {result.secondRound || '--'}
+                      {displayNumber(result.secondRound || '--', language)}
                     </p>
                   </div>
                 </div>
@@ -648,19 +661,19 @@ export default function TeerResults({
               >
                 <div>
                   <p className="font-semibold text-slate-900">
-                    {formatDate(result.date)}
+                    {formatDate(result.date, language)}
                   </p>
                   <p className="text-xs text-slate-500">
-                    {shortDate(result.date)}
+                    {shortDate(result.date, language)}
                   </p>
                 </div>
 
                 <span className="font-mono text-lg font-bold text-slate-900">
-                  {result.firstRound || '--'}
+                  {displayNumber(result.firstRound || '--', language)}
                 </span>
 
                 <span className="font-mono text-lg font-bold text-slate-900">
-                  {result.secondRound || '--'}
+                  {displayNumber(result.secondRound || '--', language)}
                 </span>
               </div>
             ))}
