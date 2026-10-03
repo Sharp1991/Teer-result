@@ -26,8 +26,13 @@ const bnMonths = [
   'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর',
 ];
 
+function parseTeerDate(date: string) {
+  const [day, month, year] = date.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
 function formatDate(date: string, language: 'en' | 'bn' = 'en') {
-  const d = new Date(date);
+  const d = parseTeerDate(date);
   if (Number.isNaN(d.getTime())) return date;
 
   if (language === 'bn') {
@@ -42,7 +47,7 @@ function formatDate(date: string, language: 'en' | 'bn' = 'en') {
 }
 
 function shortDate(date: string, language: 'en' | 'bn' = 'en') {
-  const d = new Date(date);
+  const d = parseTeerDate(date);
   if (Number.isNaN(d.getTime())) return date;
 
   if (language === 'bn') {
@@ -120,7 +125,7 @@ function getPeriodResults(
     )
 
     return valid.filter(
-      (r) => new Date(`${r.date}T00:00:00`) >= startDate
+      (r) => parseTeerDate(r.date) >= startDate
     )
   }
 
@@ -283,8 +288,8 @@ export default function TeerResults({
 
   const chronologicalResults = [...allResults].sort(
     (a, b) =>
-      new Date(`${a.date}T00:00:00`).getTime() -
-      new Date(`${b.date}T00:00:00`).getTime()
+      parseTeerDate(a.date).getTime() -
+      parseTeerDate(b.date).getTime()
   );
 
   const validStatsResults = chronologicalResults.filter(
@@ -306,7 +311,7 @@ export default function TeerResults({
   } else if (statsPeriod === '500') {
     statsResults = validStatsResults.slice(-500);
   } else if (statsPeriod === '1y' || statsPeriod === '2y') {
-    const latestDate = new Date(`${latestStatsDate}T00:00:00`);
+    const latestDate = parseTeerDate(latestStatsDate);
     const startDate = new Date(latestDate);
 
     startDate.setFullYear(
@@ -314,7 +319,7 @@ export default function TeerResults({
     );
 
     statsResults = validStatsResults.filter(
-      (r) => new Date(`${r.date}T00:00:00`) >= startDate
+      (r) => parseTeerDate(r.date) >= startDate
     );
   }
 
