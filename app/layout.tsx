@@ -3,7 +3,7 @@ import Script from 'next/script'
 import './globals.css'
 
 const siteUrl = 'https://www.shillongteerresults.co.in'
-const GA_ID = 'G-TW3TW1J38F'
+const GA_ID = 'G-WNCJ4YL3J0'
 // Google Analytics 4
 
 export const metadata: Metadata = {
