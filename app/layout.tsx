@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import './globals.css'
 
 const siteUrl = 'https://www.shillongteerresults.co.in'
+const GA_ID = 'G-TW3TW1J38F'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -38,6 +40,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>{children}</body>
+
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+        strategy="afterInteractive"
+      />
+
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){window.dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${GA_ID}');
+        `}
+      </Script>
     </html>
   )
 }
