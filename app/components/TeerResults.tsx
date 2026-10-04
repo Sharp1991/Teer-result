@@ -11,7 +11,7 @@ interface TeerResult {
   status: 'live' | 'cached';
 }
 
-type Tab = 'overview' | 'statistics' | 'history';
+type Tab = 'overview' | 'history';
 
 function displayNumber(value: string | number, language: 'en' | 'bn' = 'en') {
   const text = String(value);
@@ -177,7 +177,7 @@ export default function TeerResults({
     results: 'Results',
     statistics: 'Statistics',
     history: 'History',
-    dreamNumber: '{t.dreamNumber}',
+    dreamNumber: 'Dream Number',
     todaysResult: "TODAY'S TEER RESULT",
     noResult: 'No result',
     refresh: 'Refresh',
@@ -223,8 +223,6 @@ export default function TeerResults({
   const [error, setError] = useState('');
   const [tab, setTab] = useState<Tab>(initialTab);
   const [historyPage, setHistoryPage] = useState(1);
-  const [statsRound, setStatsRound] = useState<'firstRound' | 'secondRound'>('firstRound');
-  const [statsPeriod, setStatsPeriod] = useState('100');
   const historyPerPage = 20;
 
   const fetchResults = async () => {
@@ -285,64 +283,6 @@ export default function TeerResults({
     ? [todayResult, ...history.filter((r) => r.date !== todayResult.date)]
     : history;
 
-  const firstRoundValues = allResults.map((r) => r.firstRound);
-  const secondRoundValues = allResults.map((r) => r.secondRound);
-
-  const chronologicalResults = [...allResults].sort(
-    (a, b) =>
-      parseTeerDate(a.date).getTime() -
-      parseTeerDate(b.date).getTime()
-  );
-
-  const validStatsResults = chronologicalResults.filter(
-    (r) => validNumber(r[statsRound])
-  );
-
-  const latestStatsDate = chronologicalResults.length
-    ? chronologicalResults[chronologicalResults.length - 1].date
-    : '';
-
-  let statsResults = validStatsResults;
-
-  if (statsPeriod === '20') {
-    statsResults = validStatsResults.slice(-20);
-  } else if (statsPeriod === '50') {
-    statsResults = validStatsResults.slice(-50);
-  } else if (statsPeriod === '100') {
-    statsResults = validStatsResults.slice(-100);
-  } else if (statsPeriod === '500') {
-    statsResults = validStatsResults.slice(-500);
-  } else if (statsPeriod === '1y' || statsPeriod === '2y') {
-    const latestDate = parseTeerDate(latestStatsDate);
-    const startDate = new Date(latestDate);
-
-    startDate.setFullYear(
-      startDate.getFullYear() - (statsPeriod === '1y' ? 1 : 2)
-    );
-
-    statsResults = validStatsResults.filter(
-      (r) => parseTeerDate(r.date) >= startDate
-    );
-  }
-
-  const statsFrequency = getFrequency(
-    statsResults.map((r) => r[statsRound])
-  );
-
-  const mostAppeared = Object.entries(statsFrequency)
-    .map(([number, count]) => ({ number, count }))
-    .sort(
-      (a, b) =>
-        b.count - a.count ||
-        a.number.localeCompare(b.number)
-    )
-    .slice(0, 10);
-
-  const longestMissing = getLongestMissing(
-    chronologicalResults,
-    statsRound
-  ).slice(0, 10);
-
   const historyTotalPages = Math.ceil(allResults.length / historyPerPage);
   const historyStart = (historyPage - 1) * historyPerPage;
   const paginatedHistory = allResults.slice(historyStart, historyStart + historyPerPage);
@@ -365,36 +305,36 @@ export default function TeerResults({
           </button>
 
           <div className="flex rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-inner">
-            {[
-              ['overview', t.results],
-              ['statistics', t.statistics],
-            ].map(([value, label]) => (
-              <button
-                key={value}
-                onClick={() => setTab(value as Tab)}
-                className={`rounded-lg px-3 py-2 text-xs font-bold transition-all ${
-                  tab === value
-                    ? 'bg-white text-slate-950 shadow-sm'
-                    : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+            <button
+  onClick={() => setTab('overview')}
+  className={`rounded-lg px-3 py-2 text-xs font-bold transition-all ${
+    tab === 'overview'
+      ? 'bg-white text-slate-950 shadow-sm'
+      : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+  }`}
+>
+  {t.results}
+</button>
 
-              <a
-                href={language === 'bn' ? '/bn/history' : '/history'}
-                className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
-              >
-                {t.history}
-              </a>
+<a
+  href={language === 'bn' ? '/bn/statistics' : '/statistics'}
+  className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
+>
+  {t.statistics}
+</a>
+  <a
+    href={language === 'bn' ? '/bn/history' : '/history'}
+    className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
+  >
+    {t.history}
+  </a>
               <a
                 href={language === 'bn' ? '/bn/dream-number' : '/dream-number'}
                 className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
               >
-                {language === 'bn' ? 'স্বপ্নের নম্বর' : 'Dream Number'}
+                {t.dreamNumber}
               </a>
-          </div>
+</div>
         </div>
       </nav>
 
@@ -535,133 +475,14 @@ export default function TeerResults({
               {t.statisticsDescription}
             </p>
 
-            <button
-              onClick={() => setTab('statistics')}
-              className="mt-4 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white"
+            <a
+              href={language === 'bn' ? '/bn/statistics' : '/statistics'}
+              className="mt-4 inline-block rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white"
             >
               {t.openDataCentre}
-            </button>
+            </a>
           </section>
         </>
-      )}
-
-      {tab === 'statistics' && (
-        <section className="space-y-8">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
-              {t.dataCentre}
-            </p>
-            <h1 className="mt-1 text-2xl font-black text-slate-900 sm:text-3xl">
-              {t.exploreStatistics}
-            </h1>
-            <p className="mt-2 text-sm text-slate-500">
-              {t.frequencyDescription}
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="flex rounded-xl bg-slate-100 p-1">
-              {[
-                ['firstRound', 'First Round'],
-                ['secondRound', 'Second Round'],
-              ].map(([value, label]) => (
-                <button
-                  key={value}
-                  onClick={() =>
-                    setStatsRound(value as 'firstRound' | 'secondRound')
-                  }
-                  className={`rounded-lg px-4 py-2 text-xs font-semibold ${
-                    statsRound === value
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-500'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            <select
-              value={statsPeriod}
-              onChange={(e) => setStatsPeriod(e.target.value)}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700"
-            >
-              <option value="20">{t.last20}</option>
-              <option value="50">{t.last50}</option>
-              <option value="100">{t.last100}</option>
-              <option value="500">{t.last500}</option>
-              <option value="1y">{t.last1Year}</option>
-              <option value="2y">{t.last2Years}</option>
-              <option value="all">All time</option>
-            </select>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="font-bold text-slate-900">
-                    {t.top10Appeared}
-                  </h2>
-                  <p className="mt-1 text-xs text-slate-500">
-                    {displayNumber(statsResults.length, language)} {t.drawsAnalysed}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-4 divide-y divide-slate-100">
-                {mostAppeared.map((item, index) => (
-                  <div
-                    key={item.number}
-                    className="flex items-center justify-between py-2.5"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="w-5 text-xs font-bold text-slate-400">
-                        {displayNumber(index + 1, language)}
-                      </span>
-                      <span className="font-mono text-lg font-black text-slate-900">
-                        {displayNumber(item.number, language)}
-                      </span>
-                    </div>
-                    <span className="text-sm font-semibold text-slate-600">
-                      {displayNumber(item.count, language)} {t.times}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="font-bold text-slate-900">
-                {t.top10Missing}
-              </h2>
-              <p className="mt-1 text-xs text-slate-500">
-                {t.currentGap}
-              </p>
-
-              <div className="mt-4 divide-y divide-slate-100">
-                {longestMissing.map((item, index) => (
-                  <div
-                    key={item.number}
-                    className="flex items-center justify-between py-2.5"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="w-5 text-xs font-bold text-slate-400">
-                        {displayNumber(index + 1, language)}
-                      </span>
-                      <span className="font-mono text-lg font-black text-slate-900">
-                        {displayNumber(item.number, language)}
-                      </span>
-                    </div>
-                    <span className="text-sm font-semibold text-slate-600">
-                      {displayNumber(item.gap, language)} {t.draws}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
       )}
 
       {tab === 'history' && (

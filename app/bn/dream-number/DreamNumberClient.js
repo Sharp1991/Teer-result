@@ -37,21 +37,32 @@ export default function DreamNumberClient() {
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       <section className="border-b border-green-100 bg-white/90">
         <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
-          <nav className="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
-            <Link
-              href="/bn"
-              className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
-            >
-              <span aria-hidden="true">←</span>
-              হোম
-            </Link>
+          <nav className="sticky top-0 z-10 -mx-4 border-b border-slate-800 bg-slate-950 px-4 py-3 shadow-md">
+            <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
+              <Link href="/bn" className="text-left">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                  Shillong
+                </p>
+                <p className="mt-0.5 text-sm font-black tracking-tight text-white">
+                  TEER RESULTS
+                </p>
+              </Link>
 
-            <Link
-              href="/dream-number"
-              className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
-            >
-              English
-            </Link>
+              <div className="flex rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-inner">
+                <Link href="/bn" className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white">
+                  ফলাফল
+                </Link>
+                <Link href="/bn/statistics" className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white">
+                  পরিসংখ্যান
+                </Link>
+                <Link href="/bn/history" className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white">
+                  ইতিহাস
+                </Link>
+                <Link href="/bn/dream-number" className="rounded-lg bg-white px-3 py-2 text-xs font-bold text-slate-950 shadow-sm">
+                  ড্রিম নম্বর
+                </Link>
+              </div>
+            </div>
           </nav>
 
           <div className="pt-10 text-center">

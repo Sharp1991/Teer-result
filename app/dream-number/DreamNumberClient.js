@@ -40,14 +40,32 @@ export default function DreamNumberClient() {
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       <section className="border-b border-green-100 bg-white/90">
         <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
-          <nav className="mb-6 border-b border-slate-100 pb-4">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
-            >
-              <span aria-hidden="true">←</span>
-              Home
-            </Link>
+          <nav className="sticky top-0 z-10 -mx-4 border-b border-slate-800 bg-slate-950 px-4 py-3 shadow-md">
+            <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
+              <Link href="/" className="text-left">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                  Shillong
+                </p>
+                <p className="mt-0.5 text-sm font-black tracking-tight text-white">
+                  TEER RESULTS
+                </p>
+              </Link>
+
+              <div className="flex rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-inner">
+                <Link href="/" className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white">
+                  Results
+                </Link>
+                <Link href="/statistics" className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white">
+                  Statistics
+                </Link>
+                <Link href="/history" className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white">
+                  History
+                </Link>
+                <Link href="/dream-number" className="rounded-lg bg-white px-3 py-2 text-xs font-bold text-slate-950 shadow-sm">
+                  Dream Number
+                </Link>
+              </div>
+            </div>
           </nav>
 
           <div className="pt-10 text-center">
