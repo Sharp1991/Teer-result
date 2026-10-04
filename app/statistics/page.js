@@ -80,17 +80,33 @@ export default function StatisticsPage() {
             Shillong Teer Data Centre
           </p>
           <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
-            📊 Teer Statistics
+            📊 Shillong Teer Analytics &amp; Statistics
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
-            Explore historical number frequency, gaps and round-by-round
-            statistics from recorded Shillong Teer results.
+            Explore Shillong Teer results through number frequency, hot and cold numbers, missing numbers, number gaps and round-by-round historical analysis.
           </p>
         </section>
 
         <div className="mt-6">
           <TeerStatistics language="en" />
         </div>
+
+        <section className="mt-8 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-8">
+          <h2 className="text-xl font-black tracking-tight text-slate-900">
+            About Shillong Teer Analytics
+          </h2>
+          <div className="mt-4 space-y-4 text-sm leading-7 text-slate-600">
+            <p>
+              Shillong Teer Analytics helps you explore historical Shillong Teer results through number frequency, appearance gaps and round-by-round patterns.
+            </p>
+            <p>
+              The Data Centre covers both First Round and Second Round results, including hot numbers, cold numbers, frequently appearing numbers and numbers that have been absent for longer periods.
+            </p>
+            <p>
+              Use the statistics to study historical results and number trends over different periods. The data is presented for analysis and reference and should not be treated as a prediction of future Teer results.
+            </p>
+          </div>
+        </section>
       </div>
     </main>
   )
