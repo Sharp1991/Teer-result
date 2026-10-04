@@ -358,7 +358,7 @@ export default function TeerResults({
                 </p>
 
                 <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
-                  {todayResult ? formatDate(todayResult.date, language) : 'No result'}
+                  {language === 'bn' ? 'আজকের শিলং তীর ফলাফল' : todayResult ? formatDate(todayResult.date, language) : 'No result'}
                 </h1>
 
                 <p className="mt-2 text-sm text-slate-400">
