@@ -167,8 +167,10 @@ function getLongestMissing(
 
 export default function TeerResults({
   language = 'en',
+  initialTab = 'overview',
 }: {
   language?: 'en' | 'bn';
+  initialTab?: Tab;
 }) {
   const t = language === 'bn' ? bn : {
     siteName: 'Shillong Teer Results',
@@ -219,7 +221,7 @@ export default function TeerResults({
   const [history, setHistory] = useState<TeerResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [tab, setTab] = useState<Tab>('overview');
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [historyPage, setHistoryPage] = useState(1);
   const [statsRound, setStatsRound] = useState<'firstRound' | 'secondRound'>('firstRound');
   const [statsPeriod, setStatsPeriod] = useState('100');
@@ -366,7 +368,6 @@ export default function TeerResults({
             {[
               ['overview', t.results],
               ['statistics', t.statistics],
-              ['history', t.history],
             ].map(([value, label]) => (
               <button
                 key={value}
@@ -381,6 +382,12 @@ export default function TeerResults({
               </button>
             ))}
 
+              <a
+                href={language === 'bn' ? '/bn/history' : '/history'}
+                className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
+              >
+                {t.history}
+              </a>
               <a
                 href={language === 'bn' ? '/bn/dream-number' : '/dream-number'}
                 className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
@@ -463,12 +470,12 @@ export default function TeerResults({
                 </p>
               </div>
 
-              <button
-                onClick={() => setTab('history')}
+              <a
+                  href={language === 'bn' ? '/bn/history' : '/history'}
                 className="text-sm font-semibold text-slate-700"
               >
                 {t.viewAll}
-              </button>
+              </a>
             </div>
 
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
