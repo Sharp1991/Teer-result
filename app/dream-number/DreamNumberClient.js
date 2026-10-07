@@ -78,7 +78,11 @@ export default function DreamNumberClient() {
             </h1>
 
             <p className="mx-auto mt-3 max-w-2xl text-base leading-7 text-slate-600">
-              Search your dream to find traditional dream-number associations.
+              Enter a word or short description of what you saw in your dream.
+For example: snake, elephant, rain, river, wedding, flying, or a dead person.
+
+We’ll search for a traditional dream-number association that matches your description.
+If no matching association is found, we’ll let you know instead of showing an unrelated number.
             </p>
           </div>
 
