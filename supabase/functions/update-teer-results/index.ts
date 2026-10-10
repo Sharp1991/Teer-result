@@ -74,8 +74,13 @@ Deno.serve(async () => {
       (result) => result.result_date > latestStoredDate
     );
 
+    let insertedResults: Pick<
+      ScrapedResult,
+      "result_date" | "first_round" | "second_round"
+    >[] = [];
+
     if (newResults.length > 0) {
-      const { error: insertError } = await supabase
+      const { data: insertedRows, error: insertError } = await supabase
         .from("teer_results")
         .upsert(
           newResults.map((result) => ({
@@ -86,10 +91,52 @@ Deno.serve(async () => {
             onConflict: "result_date",
             ignoreDuplicates: true,
           }
-        );
+        )
+        .select("result_date, first_round, second_round");
 
       if (insertError) {
         throw new Error(`Supabase insert error: ${insertError.message}`);
+      }
+
+      insertedResults = insertedRows ?? [];
+    }
+
+    let notificationStatus = "not_needed";
+
+    if (insertedResults.length > 0) {
+      const pushSendUrl = Deno.env.get("PUSH_SEND_URL");
+      const pushInternalSecret = Deno.env.get("PUSH_INTERNAL_SECRET");
+
+      if (!pushSendUrl || !pushInternalSecret) {
+        console.error("Push sender configuration is missing.");
+        notificationStatus = "configuration_missing";
+      } else {
+        try {
+          const pushResponse = await fetch(pushSendUrl, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${pushInternalSecret}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ results: insertedResults }),
+          });
+
+          if (!pushResponse.ok) {
+            console.error(
+              "Push sender returned status:",
+              pushResponse.status
+            );
+            notificationStatus = "send_failed";
+          } else {
+            notificationStatus = "triggered";
+          }
+        } catch (error) {
+          console.error(
+            "Could not contact push sender:",
+            error instanceof Error ? error.message : "Unknown error"
+          );
+          notificationStatus = "send_failed";
+        }
       }
     }
 
@@ -98,8 +145,10 @@ Deno.serve(async () => {
         success: true,
         scraped: results.length,
         newResults: newResults.length,
+        insertedCount: insertedResults.length,
         alreadyPresent: results.length - newResults.length,
-        insertedDates: newResults.map((result) => result.result_date),
+        insertedDates: insertedResults.map((result) => result.result_date),
+        notificationStatus,
       }),
       {
         headers: {

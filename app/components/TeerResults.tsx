@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { bn } from '../../lib/i18n/bn';
+import PushNotificationButton from './PushNotificationButton';
 
 interface TeerResult {
   date: string;
@@ -369,12 +370,22 @@ export default function TeerResults({
                 </p>
               </div>
 
-              <button
-                onClick={fetchResults}
-                className="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold hover:bg-slate-800"
-              >
-                ↻ {t.refresh}
-              </button>
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="max-w-sm">
+                  <p className="text-xs leading-5 text-slate-400">
+                    {language === 'bn'
+                      ? 'শিলং তীরের নতুন ফার্স্ট ও সেকেন্ড রাউন্ডের ফলাফল প্রকাশিত হলে নোটিফিকেশন পান।'
+                      : 'Get notified when new Shillong Teer First Round and Second Round results are available.'}
+                  </p>
+                </div>
+                <PushNotificationButton language={language} />
+                <button
+                  onClick={fetchResults}
+                  className="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold hover:bg-slate-800"
+                >
+                  ↻ {t.refresh}
+                </button>
+              </div>
             </div>
 
             <div className="mt-7 grid grid-cols-2 gap-3">
