@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 type TeerResult = {
   date: string;
@@ -23,8 +29,26 @@ type GapStat = {
 
 export async function GET() {
   try {
-    const html = await fetchHTML();
-    const { history } = extractResults(html);
+    const { data, error } = await supabase
+      .from("teer_results")
+      .select("result_date, first_round, second_round, location, status")
+      .order("result_date", { ascending: false });
+
+    if (error) {
+      throw new Error(`Supabase error: ${error.message}`);
+    }
+
+    const history: TeerResult[] = (data || []).map((row) => {
+      const [year, month, day] = row.result_date.split("-");
+
+      return {
+        date: `${day}-${month}-${year}`,
+        firstRound: row.first_round.padStart(2, "0"),
+        secondRound: row.second_round.padStart(2, "0"),
+        location: row.location?.trim() || "Shillong",
+        status: row.status || "cached",
+      };
+    });
 
     if (!history.length) {
       return NextResponse.json({
@@ -54,50 +78,6 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
-
-async function fetchHTML() {
-  const target = "https://teertooday.com/Previous-Results.php";
-
-  const res = await fetch(target, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-      Accept:
-        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    },
-    signal: AbortSignal.timeout(10000),
-  });
-
-  if (!res.ok) {
-    throw new Error(`Website returned ${res.status}`);
-  }
-
-  return res.text();
-}
-
-function extractResults(html: string) {
-  const pattern =
-    /(\d{1,2}-\d{1,2}-\d{4})<\/td>\s*<td[^>]*>(\d{1,2})<\/td>\s*<td[^>]*>(\d{1,2})<\/td>\s*<td[^>]*>([^<]+)/gi;
-
-  const results: TeerResult[] = [];
-  let match;
-
-  while ((match = pattern.exec(html)) !== null) {
-    const [, date, firstRound, secondRound, city] = match;
-
-    results.push({
-      date,
-      firstRound: firstRound.padStart(2, "0"),
-      secondRound: secondRound.padStart(2, "0"),
-      location: city.trim(),
-      status: "cached",
-    });
-  }
-
-  return {
-    history: results,
-  };
 }
 
 function buildRoundStatistics(

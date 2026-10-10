@@ -2,92 +2,78 @@ export const revalidate = 0;
 export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-// Convert to IST
-function getIST() {
-  const now = new Date();
-  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-  return new Date(utc + 5.5 * 3600 * 1000);
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+// Convert YYYY-MM-DD to the existing DD-MM-YYYY format
+function formatDate(date: string) {
+  const [year, month, day] = date.split("-");
+  return `${day}-${month}-${year}`;
 }
 
-function getISTDateString() {
-  return getIST().toLocaleDateString("en-IN").replace(/\//g, "-");
+async function getAllResults() {
+  const pageSize = 1000;
+  const results: any[] = [];
+
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
+      .from("teer_results")
+      .select("result_date, first_round, second_round, location, status")
+      .order("result_date", { ascending: false })
+      .range(from, from + pageSize - 1);
+
+    if (error) {
+      throw new Error(`Supabase error: ${error.message}`);
+    }
+
+    if (!data || data.length === 0) break;
+
+    results.push(
+      ...data.map((row) => ({
+        date: formatDate(row.result_date),
+        firstRound: row.first_round.padStart(2, "0"),
+        secondRound: row.second_round.padStart(2, "0"),
+        location: row.location?.trim() || "Shillong",
+        status: row.status || "cached",
+      }))
+    );
+
+    if (data.length < pageSize) break;
+  }
+
+  return results;
 }
 
 export async function GET() {
   try {
-    console.log("🔄 Scraping fresh Teer results...");
+    console.log("📦 Reading Teer results from Supabase...");
 
-    const html = await fetchHTML();
-    const { today, history } = extractResults(html);
+    const history = await getAllResults();
+    const today = history[0] || null;
 
     const payload = {
       success: true,
       today,
-      history: history,
+      history,
       scrapedAt: new Date().toISOString(),
-      note: "Live data from teertooday.com"
+      note: "Data from Supabase",
     };
 
     return NextResponse.json(payload);
 
   } catch (err) {
-    console.error("❌ Scrape Error:", err);
-    
-    // Return friendly error with fallback data
+    console.error("❌ Supabase Error:", err);
+
     return NextResponse.json({
       success: false,
-      error: "Live results temporarily unavailable",
-      today: {
-        date: getISTDateString(),
-        firstRound: "00",
-        secondRound: "00", 
-        location: "Shillong",
-        status: "cached"
-      },
+      error: "Results temporarily unavailable",
+      today: null,
       history: [],
-      note: "Check back later for live updates"
+      note: "Check back later",
     });
   }
-}
-
-// Fetch raw HTML
-async function fetchHTML() {
-  const target = "https://teertooday.com/Previous-Results.php";
-
-  const res = await fetch(target, {
-    headers: {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    },
-    signal: AbortSignal.timeout(10000),
-  });
-
-  if (!res.ok) throw new Error(`Website returned ${res.status}`);
-  return await res.text();
-}
-
-// More flexible regex
-function extractResults(html: string) {
-  const pattern =
-    /(\d{1,2}-\d{1,2}-\d{4})<\/td>\s*<td[^>]*>(\d{1,2})<\/td>\s*<td[^>]*>(\d{1,2})<\/td>\s*<td[^>]*>([^<]+)/gi;
-
-  const results: any[] = [];
-  let match;
-
-  while ((match = pattern.exec(html)) !== null) {
-    const [_, date, firstRound, secondRound, city] = match;
-    results.push({
-      date,
-      firstRound: firstRound.padStart(2, '0'), // Ensure 2-digit format
-      secondRound: secondRound.padStart(2, '0'),
-      location: city.trim(),
-      status: "cached",
-    });
-  }
-
-  return {
-    today: results[0] || null,
-    history: results,
-  };
 }
