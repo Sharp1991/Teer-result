@@ -257,25 +257,31 @@ export default function TeerResults({
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-6xl py-20 text-center">
-        <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-slate-800" />
-        <p className="mt-4 text-sm text-slate-500">{t.loading}</p>
+      <div className="space-y-6">
+        <SiteNavbar language={language} activePage={tab === "history" ? "history" : "results"} />
+        <div className="mx-auto max-w-6xl py-20 text-center">
+          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-slate-800" />
+          <p className="mt-4 text-sm text-slate-500">{t.loading}</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="mx-auto max-w-md py-16">
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
-          <h2 className="font-bold text-red-800">Unable to load results</h2>
-          <p className="mt-2 text-sm text-red-600">{error}</p>
-          <button
-            onClick={fetchResults}
-            className="mt-5 rounded-xl bg-red-700 px-5 py-2.5 text-sm font-semibold text-white"
-          >
-            {t.tryAgain}
-          </button>
+      <div className="space-y-6">
+        <SiteNavbar language={language} activePage={tab === "history" ? "history" : "results"} />
+        <div className="mx-auto max-w-md py-16">
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
+            <h2 className="font-bold text-red-800">Unable to load results</h2>
+            <p className="mt-2 text-sm text-red-600">{error}</p>
+            <button
+              onClick={fetchResults}
+              className="mt-5 rounded-xl bg-red-700 px-5 py-2.5 text-sm font-semibold text-white"
+            >
+              {t.tryAgain}
+            </button>
+          </div>
         </div>
       </div>
     );
