@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 export default function BengaliStatisticsPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-8">
+    <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 pt-0 pb-8">
       <div className="mx-auto max-w-6xl px-4">
         <SiteNavbar language="bn" activePage="statistics" />
 

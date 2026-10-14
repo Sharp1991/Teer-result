@@ -31,7 +31,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-8">
+    <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 pt-0 pb-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
