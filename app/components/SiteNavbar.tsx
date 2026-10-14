@@ -37,8 +37,8 @@ export default function SiteNavbar({
           aria-current={active ? 'page' : undefined}
           className={`shrink-0 rounded-lg px-3 py-2 text-xs font-bold transition-colors ${
             active
-              ? 'bg-white text-slate-950 shadow-sm'
-              : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+              ? 'bg-amber-400 text-slate-950 shadow-sm'
+              : 'text-slate-300 hover:bg-slate-800 hover:text-amber-300'
           } ${mobile ? 'whitespace-nowrap' : ''}`}
         >
           {item.label}
@@ -47,7 +47,7 @@ export default function SiteNavbar({
     });
 
   return (
-    <nav className="sticky top-0 z-50 -mx-4 w-auto border-b border-slate-800 bg-slate-950 px-4 shadow-md">
+    <nav className="sticky top-0 z-50 -mx-4 w-auto border-b border-slate-700 bg-[#1F2937] px-4 shadow-md">
       <div className="mx-auto max-w-6xl">
         <div className="flex min-h-16 items-center justify-between gap-3">
           <Link href={home} className="flex min-w-0 shrink-0 items-center gap-3">
@@ -56,7 +56,7 @@ export default function SiteNavbar({
               alt="Teer Khobor logo"
               width="40"
               height="40"
-              className="h-10 w-10 rounded-xl object-contain"
+              className="h-10 w-10 rounded-xl object-contain ring-1 ring-amber-400/50"
             />
             <span className="text-sm font-black tracking-wide text-white sm:text-base">
               TEER KHOBOR
