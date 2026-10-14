@@ -1,4 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#0f172a"/>
-  <text x="32" y="43" text-anchor="middle" font-family="Arial, sans-serif" font-size="27" font-weight="700" fill="#ffffff">ST</text>
+  <rect width="64" height="64" rx="14" fill="#0f766e"/>
+  <text x="32" y="27" text-anchor="middle"
+    font-family="Arial, sans-serif" font-size="12"
+    font-weight="700" fill="#ffffff">TEER</text>
+  <text x="32" y="45" text-anchor="middle"
+    font-family="Arial, sans-serif" font-size="17"
+    font-weight="700" fill="#ffffff">KHOBOR</text>
 </svg>

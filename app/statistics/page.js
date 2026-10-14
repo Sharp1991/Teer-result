@@ -1,4 +1,5 @@
 import TeerStatistics from '../components/TeerStatistics'
+import SiteNavbar from '../components/SiteNavbar';
 
 export const metadata = {
   title: 'Shillong Teer Analytics & Statistics | Number Frequency',
@@ -27,44 +28,7 @@ export default function StatisticsPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-8">
       <div className="mx-auto max-w-6xl px-4">
-        <nav className="sticky top-0 z-10 -mx-4 border-b border-slate-800 bg-slate-950 px-4 py-3 shadow-md">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-            <a href="/" className="text-left">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                Shillong
-              </p>
-              <p className="mt-0.5 text-sm font-black tracking-tight text-white">
-                TEER RESULTS
-              </p>
-            </a>
-
-            <div className="flex rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-inner">
-              <a
-                href="/"
-                className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
-              >
-                Results
-              </a>
-              <a
-                href="/statistics"
-                className="rounded-lg bg-white px-3 py-2 text-xs font-bold text-slate-950 shadow-sm"
-              >
-                Statistics
-              </a>
-              <a
-                href="/history"
-                className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
-              >
-                History
-              </a>              <a
-                href="/dream-number"
-                className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
-              >
-                Dream Number
-              </a>
-            </div>
-          </div>
-        </nav>
+        <SiteNavbar language="en" activePage="statistics" />
 
         <div className="mt-4 flex justify-end">
           <a

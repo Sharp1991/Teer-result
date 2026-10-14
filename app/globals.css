@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* Keep mobile overscroll behind the sticky navbar dark, not white. */
+html,
+body {
+  background-color: #020617;
+}
+
+/* Prevent white overscroll stripe above sticky navigation on mobile */
+html {
+  background: #020617 !important;
+  overscroll-behavior-y: none;
+}
+
+body {
+  background: #020617 !important;
+  overscroll-behavior-y: none;
+}

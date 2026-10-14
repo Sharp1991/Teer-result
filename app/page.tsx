@@ -10,7 +10,7 @@ export default function Home() {
         '@type': 'WebSite',
         '@id': `${siteUrl}/#website`,
         url: siteUrl,
-        name: 'Shillong Teer Results',
+        name: 'Teer Khobor',
         description:
           'Shillong Teer results, previous results, and Teer statistics.',
         inLanguage: 'en-IN',
@@ -19,7 +19,7 @@ export default function Home() {
         '@type': 'WebPage',
         '@id': `${siteUrl}/#webpage`,
         url: siteUrl,
-        name: 'Shillong Teer Results Today',
+        name: 'Teer Khobor | Shillong Teer Results Today',
         description:
           'Check Shillong Teer First Round and Second Round results, previous results, and statistics.',
         isPartOf: {

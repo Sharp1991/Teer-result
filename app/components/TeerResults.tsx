@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import SiteNavbar from './SiteNavbar';
 import { bn } from '../../lib/i18n/bn';
 import PushNotificationButton from './PushNotificationButton';
 
@@ -174,7 +175,7 @@ export default function TeerResults({
   initialTab?: Tab;
 }) {
   const t = language === 'bn' ? bn : {
-    siteName: 'Shillong Teer Results',
+    siteName: 'Teer Khobor',
     results: 'Results',
     statistics: 'Statistics',
     history: 'History',
@@ -291,53 +292,7 @@ export default function TeerResults({
   return (
     <div className="space-y-6">
       {/* Navigation */}
-      <nav className="sticky top-0 z-10 -mx-4 border-b border-slate-800 bg-slate-950 px-4 py-3 shadow-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-          <button
-            onClick={() => setTab('overview')}
-            className="text-left"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-              Shillong
-            </p>
-            <p className="mt-0.5 text-sm font-black tracking-tight text-white">
-              TEER RESULTS
-            </p>
-          </button>
-
-          <div className="flex rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-inner">
-            <button
-  onClick={() => setTab('overview')}
-  className={`rounded-lg px-3 py-2 text-xs font-bold transition-all ${
-    tab === 'overview'
-      ? 'bg-white text-slate-950 shadow-sm'
-      : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-  }`}
->
-  {t.results}
-</button>
-
-<a
-  href={language === 'bn' ? '/bn/statistics' : '/statistics'}
-  className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
->
-  {t.statistics}
-</a>
-  <a
-    href={language === 'bn' ? '/bn/history' : '/history'}
-    className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
-  >
-    {t.history}
-  </a>
-              <a
-                href={language === 'bn' ? '/bn/dream-number' : '/dream-number'}
-                className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
-              >
-                {t.dreamNumber}
-              </a>
-</div>
-        </div>
-      </nav>
+      <SiteNavbar language={language} activePage={tab === "history" ? "history" : "results"} />
 
               <div className="flex justify-end">
           <a
@@ -542,7 +497,7 @@ export default function TeerResults({
             ))}
 
             {allResults.length === 0 && (
-              <p className="p-10 text-center text-sm text-slate-400">
+              <p className="p-10 text-center text-sm text-slate-600">
                 No historical results available.
               </p>
             )}
@@ -594,8 +549,8 @@ export default function TeerResults({
       </section>
 
       <footer className="border-t border-slate-200 py-8 text-center">
-        <p className="text-xs text-slate-400">
-          Shillong Teer Results · Historical statistics and results
+        <p className="text-xs text-slate-600">
+          Teer Khobor · Shillong Teer Results and Statistics
         </p>
       </footer>
     </div>

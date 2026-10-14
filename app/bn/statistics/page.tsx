@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import SiteNavbar from '../../components/SiteNavbar';
 import TeerStatistics from '../../components/TeerStatistics'
 
 export const metadata: Metadata = {
@@ -28,44 +29,7 @@ export default function BengaliStatisticsPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-8">
       <div className="mx-auto max-w-6xl px-4">
-        <nav className="sticky top-0 z-10 -mx-4 border-b border-slate-800 bg-slate-950 px-4 py-3 shadow-md">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-            <a href="/bn" className="text-left">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                Shillong
-              </p>
-              <p className="mt-0.5 text-sm font-black tracking-tight text-white">
-                TEER RESULTS
-              </p>
-            </a>
-
-            <div className="flex rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-inner">
-              <a
-                href="/bn"
-                className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
-              >
-                ফলাফল
-              </a>
-              <a
-                href="/bn/statistics"
-                className="rounded-lg bg-white px-3 py-2 text-xs font-bold text-slate-950 shadow-sm"
-              >
-                পরিসংখ্যান
-              </a>
-              <a
-                href="/bn/history"
-                className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
-              >
-                ইতিহাস
-              </a>              <a
-                href="/bn/dream-number"
-                className="rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition-all hover:bg-slate-800 hover:text-white"
-              >
-                ড্রিম নম্বর
-              </a>
-            </div>
-          </div>
-        </nav>
+        <SiteNavbar language="bn" activePage="statistics" />
 
         <div className="mt-4 flex justify-end">
           <a
