@@ -37,7 +37,7 @@ export default function DreamNumberClient() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       <section className="border-b border-green-100 bg-white/90">
-        <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+        <div className="mx-auto max-w-4xl px-4 pb-6 sm:px-6">
           <SiteNavbar language="bn" activePage="dream-number" />
 
           <div className="pt-10 text-center">
