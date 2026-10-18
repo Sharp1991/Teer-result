@@ -1,8 +1,10 @@
 import TeerResults from './components/TeerResults'
+import { getHomeResults } from '../lib/get-home-results'
 
 const siteUrl = 'https://www.shillongteerresults.co.in'
 
-export default function Home() {
+export default async function Home() {
+  const initialResults = await getHomeResults()
   const structuredData = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -37,7 +39,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <div className="container mx-auto px-4">
-        <TeerResults />
+        <TeerResults initialResults={initialResults} />
       </div>
     </main>
   )

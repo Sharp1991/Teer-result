@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import TeerResults from '../components/TeerResults'
+import { getHomeResults } from '../../lib/get-home-results'
 
 export const metadata: Metadata = {
   title: {
@@ -27,11 +28,12 @@ export const metadata: Metadata = {
   },
 }
 
-export default function BengaliPage() {
+export default async function BengaliPage() {
+  const initialResults = await getHomeResults()
   return (
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 pt-0 pb-8">
       <div className="container mx-auto px-4">
-        <TeerResults language="bn" />
+        <TeerResults language="bn" initialResults={initialResults} />
       </div>
     </main>
   )

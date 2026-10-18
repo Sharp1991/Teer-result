@@ -170,9 +170,11 @@ function getLongestMissing(
 export default function TeerResults({
   language = 'en',
   initialTab = 'overview',
+  initialResults,
 }: {
   language?: 'en' | 'bn';
   initialTab?: Tab;
+  initialResults?: TeerResult[];
 }) {
   const t = language === 'bn' ? bn : {
     siteName: 'Teer Khobor',
@@ -219,9 +221,13 @@ export default function TeerResults({
     networkError: 'Network error. Please check your connection.',
     footer: '{t.footer}',
   };
-  const [todayResult, setTodayResult] = useState<TeerResult | null>(null);
-  const [history, setHistory] = useState<TeerResult[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [todayResult, setTodayResult] = useState<TeerResult | null>(
+    initialResults?.[0] ?? null
+  );
+  const [history, setHistory] = useState<TeerResult[]>(
+    initialResults ? initialResults.slice(1) : []
+  );
+  const [loading, setLoading] = useState(initialResults === undefined);
   const [error, setError] = useState('');
   const [tab, setTab] = useState<Tab>(initialTab);
   const [historyPage, setHistoryPage] = useState(1);
@@ -252,8 +258,10 @@ export default function TeerResults({
   };
 
   useEffect(() => {
-    fetchResults();
-  }, []);
+    if (initialResults === undefined) {
+      fetchResults();
+    }
+  }, [initialResults]);
 
   if (loading) {
     return (
