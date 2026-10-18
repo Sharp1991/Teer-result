@@ -11,7 +11,7 @@ const siteDescription =
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Teer Khobor | Shillong Teer Results Today',
+    default: 'Teer Khobor – Shillong Teer Result Today | First & Second Round',
     template: '%s | Teer Khobor',
   },
   description: siteDescription,
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'Teer Khobor | Shillong Teer Results Today',
+    title: 'Teer Khobor – Shillong Teer Result Today | First & Second Round',
     description: siteDescription,
     url: siteUrl,
     siteName: 'Teer Khobor',

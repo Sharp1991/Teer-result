@@ -4,7 +4,7 @@ import { getHomeResults } from '../../lib/get-home-results'
 
 export const metadata: Metadata = {
   title: {
-    default: 'শিলং তীর ফলাফল আজ | প্রথম ও দ্বিতীয় রাউন্ড',
+    default: 'Teer Khobor – শিলং তীর ফলাফল আজ | প্রথম ও দ্বিতীয় রাউন্ড',
     template: '%s',
   },
   description:
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'শিলং তীর ফলাফল আজ',
+    title: 'Teer Khobor – শিলং তীর ফলাফল আজ',
     description:
       'আজকের শিলং তীর ফলাফল, প্রথম ও দ্বিতীয় রাউন্ডের নম্বর, পূর্ববর্তী ফলাফল এবং তীর পরিসংখ্যান।',
     url: 'https://www.shillongteerresults.co.in/bn',
