@@ -3,10 +3,7 @@ import TeerResults from '../components/TeerResults'
 import { getHomeResults } from '../../lib/get-home-results'
 
 export const metadata: Metadata = {
-  title: {
-    default: 'Teer Khobor – শিলং তীর ফলাফল আজ | প্রথম ও দ্বিতীয় রাউন্ড',
-    template: '%s',
-  },
+  title: 'Teer Khobor – শিলং তীর ফলাফল আজ | প্রথম ও দ্বিতীয় রাউন্ড',
   description:
     'আজকের শিলং তীর ফলাফল দেখুন। প্রথম ও দ্বিতীয় রাউন্ডের ফলাফল, পূর্ববর্তী ফলাফল এবং তীর পরিসংখ্যান একসাথে দেখুন।',
   alternates: {
